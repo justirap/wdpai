@@ -3,13 +3,8 @@
 require_once 'src/controllers/SecurityController.php';
 require_once 'src/controllers/DashboardController.php';
 
-// TODO musimy zapewnic, ze utworzony 
-// obiekt kontrollera ma tylko jedna instancję - SINGLETON
-
-// TODO 2 /dashboard -- wszystkei dnae
-// /dashboard/12234 -- wyciagnie nam jakis elemtn o wskaznaym ID 12234
-// REGEX
 class Routing {
+    private static $instances = [];
 
     public static $routes = [
         "login" => [
@@ -19,6 +14,10 @@ class Routing {
         "register" => [
             "controller" => "SecurityController",
             "action" => "register"
+        ],
+        "logout" => [
+            "controller" => "SecurityController",
+            "action" => "logout"
         ],
         "dashboard" => [
             "controller" => "DashboardController",
@@ -31,23 +30,25 @@ class Routing {
     ];
 
     public static function run(string $path) {
-        // TODO sprawdzać za pomoca array_key_exists
-        switch($path) {
-            case 'dashboard':
-            case '':
-            case 'login':
-            case 'register':
-                $controller = Routing::$routes[$path]["controller"];
-                $action = Routing::$routes[$path]["action"];
+ 
+        $parts = explode("/", $path);
+        $actionKey = $parts[0]; 
+        $id = $parts[1] ?? null; 
 
-                $controllerObj = new $controller;
-                $id = null;
-
-                $controllerObj->$action($id);
-                break; 
-            default:
-                include 'public/views/404.html';
-                break;
+        if (!array_key_exists($actionKey, self::$routes)) {
+            include 'public/views/404.html';
+            return;
         }
+
+        $controllerName = self::$routes[$actionKey]["controller"];
+        $action = self::$routes[$actionKey]["action"];
+
+        if (!isset(self::$instances[$controllerName])) {
+            self::$instances[$controllerName] = new $controllerName();
+        }
+        
+        $controllerObj = self::$instances[$controllerName];
+
+        $controllerObj->$action($id);
     }
 }

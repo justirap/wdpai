@@ -1,4 +1,4 @@
-FROM php:8.3.18RC1-fpm-alpine3.21
+FROM php:8.3-fpm-alpine
 
 ENV RUN_DEPS \
     zlib \
@@ -22,7 +22,10 @@ ENV PHP_EXTENSIONS \
     pgsql \
     pdo_pgsql
 
-RUN apk add --no-cache --virtual .build-deps $BUILD_DEPS \
+# Dodajemy wymuszenie HTTP i odświeżenie indeksów
+RUN sed -i 's/https/http/g' /etc/apk/repositories && \
+    apk update && \
+    apk add --no-cache --virtual .build-deps $BUILD_DEPS \
     && docker-php-ext-configure gd --with-jpeg \
     && docker-php-ext-install -j "$(nproc)" $PHP_EXTENSIONS \
     && apk del .build-deps
@@ -31,7 +34,6 @@ RUN apk add --no-cache --virtual .run-deps $RUN_DEPS
 
 RUN echo 'memory_limit = -1' >> /usr/local/etc/php/conf.d/docker-php-memlimit.ini;
 
-# Copy the application code
 COPY . /app
 
 VOLUME ["/app"]

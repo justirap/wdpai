@@ -1,11 +1,43 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
-</head>
-<body>
-    Dashboard
-</body>
-</html>
+
+    <?php include __DIR__ . '/partials/header.html'; ?>
+        <?php include __DIR__ . '/partials/nav.html'; ?>
+
+  
+    <div class="container layout">
+    <main>
+        <h1>Dashboard</h1>
+        
+        <section class="user-list">
+            <h2>Lista użytkowników</h2>
+            <?php if(isset($users) && is_array($users)): ?>
+                <?php foreach($users as $user): ?>
+                    <div class="user-row">
+                        <strong>Username:</strong> <span><?= $user->getUsername(); ?></span> | 
+                        <strong>Email:</strong> <span><?= $user->getEmail(); ?></span> |
+                        <strong>Rola:</strong> <span><?= $user->getRole(); ?></span>
+                    </div>
+                    <hr />
+                <?php endforeach; ?>
+            <?php else: ?>
+                <p>Brak użytkowników do wyświetlenia.</p>
+            <?php endif; ?>
+        </section>
+
+        <section class="movie-list">
+            <h2>Dostępne filmy</h2>
+            <?php if(isset($movies) && is_array($movies)): ?>
+                <div class="movies-grid">
+                    <?php foreach($movies as $movie): ?>
+                        <div class="movie-card">
+                            <h3><?= $movie->getTitle(); ?></h3>
+                            <p><?= $movie->getDescription(); ?></p>
+                            <small>Czas trwania: <?= $movie->getDuration(); ?> min</small>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </section>
+    </main>
+</div>
+
+       <?php include __DIR__ . '/partials/footer.html'; ?>

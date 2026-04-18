@@ -32,4 +32,19 @@ class AppController {
         echo $output;
     }
 
+    protected function requireLogin() {
+    if (!isset($_SESSION['user_id'])) {
+        $url = "http://$_SERVER[HTTP_HOST]";
+        header("Location: {$url}/login");
+        exit();
+    }
+}
+
+protected function requireAdmin() {
+    $this->requireLogin(); 
+    if ($_SESSION['user_role'] !== 'admin') {
+        die("Brak uprawnień!"); 
+    }
+}
+
 }

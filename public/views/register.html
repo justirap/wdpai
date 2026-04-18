@@ -1,24 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <!-- <?php include __DIR__ . '/partials/head.html'; ?> -->
-  </head>
-  <body>
+    <?php include __DIR__ . '/partials/header.html'; ?>
+        <?php include __DIR__ . '/partials/nav.html'; ?>
     <form method="POST" action="\register">
       <h1>REGISTER FORM</h1>
 
-      <?php if(isset($messages)): ?>
-
-      <p class="messages">
-        <?= $messages ?>
-      </p>
-
-      <?php endif; ?>
+     <div class="messages">
+    <?php if(isset($messages)) {
+        foreach($messages as $message) {
+            echo $message;
+        }
+    } ?>
+</div>
       <input name="email" type="email" placeholder="Twój email" />
       <input name="password" type="password" placeholder="Twoje hasło" />
       <input name="password2" type="password" placeholder="Powtórz hasło" />
       <input name="username" type="text" placeholder="Username" />
       <button type="submit">REGISTER</button>
     </form>
-  </body>
-</html>
+ <?php include __DIR__ . '/partials/footer.html'; ?>

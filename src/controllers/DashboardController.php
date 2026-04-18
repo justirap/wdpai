@@ -2,16 +2,24 @@
 
 require_once 'AppController.php';
 require_once __DIR__.'/../repositories/UsersRepository.php';
+require_once __DIR__.'/../repositories/MovieRepository.php';
+require_once __DIR__.'/../repositories/ReservationRepository.php';
 
 class DashboardController extends AppController {
 
-    public function index() {
-        // TODO pobieranie danych z bazy
-        // wstawianie zmiennych na widok
-        $title = "INDEX";
-        $usersRepository = new UsersRepository();
-        $users = $usersRepository->getUsers();
+    private $movieRepository;
+    private $reservationRepository;
 
-        return $this->render("index", ["title" => $title, "users" => $users]);
+    public function __construct() {
+        $this->movieRepository = MovieRepository::getInstance();
+        $this->reservationRepository = ReservationRepository::getInstance();
     }
+
+    public function index() {
+        $this->requireLogin();
+        $movies = $this->movieRepository->getMovies();
+        
+        return $this->render('dashboard', ['movies' => $movies]);
+    }
+
 }
