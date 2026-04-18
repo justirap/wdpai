@@ -1,19 +1,64 @@
     <?php include __DIR__ . '/partials/header.html'; ?>
-        <?php include __DIR__ . '/partials/nav.html'; ?>
-    <form method="POST" action="\register">
-      <h1>REGISTER FORM</h1>
+<body id="register-page">
+    <div class="auth-container">
+    <div class="auth-card">
+        <div class="logo-icon">
+            <i class="fas fa-film"></i>
+        </div>
+        <h1>CinePass</h1>
+        <p class="subtitle">Join our cinematic community</p>
 
-     <div class="messages">
-    <?php if(isset($messages)) {
-        foreach($messages as $message) {
-            echo $message;
-        }
-    } ?>
+        <div class="auth-tabs">
+            <a href="/login">Login</a>
+            <a href="/register" class="active">Sign Up</a>
+        </div>
+
+        <form action="/register" method="POST">
+            <div class="messages">
+                <?php if(isset($messages)): ?>
+                    <?php foreach($messages as $message): ?>
+                        <div class="message-error"><?= $message; ?></div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
+
+            <div class="input-group">
+                <label for="username">Username</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-user"></i>
+                    <input name="username" type="text" id="username" placeholder="Your nickname" required>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="email">Email Address</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-envelope"></i>
+                    <input name="email" type="email" id="email" placeholder="name@example.com" required>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="password">Password</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-lock"></i>
+                    <input name="password" type="password" id="password" placeholder="••••••••" required>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="password2">Confirm Password</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-check-double"></i>
+                    <input name="password2" type="password" id="password2" placeholder="••••••••" required>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-primary">Create Account</button>
+        </form>
+
+    
+    </div>
 </div>
-      <input name="email" type="email" placeholder="Twój email" />
-      <input name="password" type="password" placeholder="Twoje hasło" />
-      <input name="password2" type="password" placeholder="Powtórz hasło" />
-      <input name="username" type="text" placeholder="Username" />
-      <button type="submit">REGISTER</button>
-    </form>
+
  <?php include __DIR__ . '/partials/footer.html'; ?>

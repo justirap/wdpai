@@ -1,7 +1,23 @@
-<nav>
-        <h1>My App</h1>
-        <ul>
-            <li><a href="/dashboard">Dashboard</a></li>
-            <li><a href="/logout">Wyloguj</a></li>
-        </ul>
-    </nav>
+<nav class="main-nav">
+    <div class="nav-container">
+        <a href="/dashboard" class="nav-logo">
+            <i class="fas fa-clapperboard"></i>
+            <span>Cinema</span>
+        </a>
+
+        <div class="nav-menu">
+            <ul class="nav-links">
+                <li><a href="/movies" class="active">Movies</a></li>
+                <li><a href="/tickets">Tickets</a></li>
+            </ul>
+            
+            <div class="nav-user">
+                <a href="/logout" title="Wyloguj">
+                    <div class="user-avatar-box">
+                        <i class="fas fa-user"></i>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
