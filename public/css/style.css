@@ -42,14 +42,18 @@
 body {
     margin: 0;
     font-family: 'Spline Sans', sans-serif;
-    background: url('/public/img/bg.png');
-    background-size: cover;
-    background-position: center;
+    background-color: #211111;
     height: 100vh;
     color: var(--text-main);
     position: relative;
     display: flex;
     flex-direction: column;
+}
+
+body#login-page, body#register-page {
+    background: url('/public/img/bg.png');
+    background-size: cover;
+
 }
 
 .auth-card {
@@ -314,4 +318,232 @@ p.subtitle { color: var(--text-dim); margin: 10px 0 30px; font-size: 14px; }
 
 .user-avatar-box i {
     font-size: 18px;
+}
+
+
+.movie-list {
+    color: #ffffff;
+
+}
+
+.movie-header h2 {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.movie-header .subtitle {
+    color: #8c827f;
+    font-size: 0.9rem;
+    margin-bottom: 25px;
+}
+
+.categories-bar {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+}
+
+.category-badge {
+    background-color: #2b2220;
+    color: #bcb2af;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s;
+}
+
+.category-badge.active, .category-badge:hover {
+    background-color: #e52e2e; 
+    color: #fff;
+}
+
+
+
+.movie-card {
+    background-color: #3D2525;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s;
+}
+
+.movie-card:hover {
+    transform: translateY(-5px);
+}
+
+.poster-wrapper {
+    width: 100%;
+    height: 320px;
+    overflow: hidden;
+}
+
+.movie-poster {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+
+.movie-card-info {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.movie-title {
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin: 0 0 5px 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.movie-meta {
+    color: #8c827f;
+    font-size: 0.85rem;
+    margin: 0 0 15px 0;
+}
+
+
+.btn-book {
+    background-color: #e52e2e;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    padding: 10px;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-top: auto; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+}
+
+.btn-book:hover {
+    background-color: #b82020;
+}
+
+.container.layout {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;      
+    padding: 20px 0;    
+    box-sizing: border-box;
+}
+
+.movies-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 25px;
+}
+
+
+@media screen and (max-width: 1024px) {
+    .movies-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .movies-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .movies-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+}
+
+
+.movie-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.search-form {
+    display: flex;
+    background: #231b19;
+    border: 1px solid #3d302d;
+    border-radius: 20px;
+    padding: 5px 15px;
+}
+
+.search-form input {
+    background: transparent;
+    border: none;
+    color: white;
+    outline: none;
+    padding: 5px;
+}
+
+.search-form button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+
+.categories-bar a {
+    text-decoration: none;
+}
+
+.pagination {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 40px;
+}
+
+.page-btn {
+    background-color: #231b19;
+    color: #bcb2af;
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+.page-btn.active, .page-btn:hover {
+    background-color: #e52e2e;
+    color: white;
+}
+
+.movies-nav{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.movies-nav button{
+    margin-top: 4px;
+}
+
+@media(max-width: 600px){
+    .movies-nav{
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .categories-bar{
+        width: 100%;
+    }
 }

@@ -5,38 +5,64 @@
   <body>
     <div class="container layout">
     <main>
-        <h1>Dashboard</h1>
+<section class="movie-list">
+    <div class="movie-header">
+        <h2>Now Showing</h2>
         
-        <section class="user-list">
-            <h2>Lista użytkowników</h2>
-            <?php if(isset($users) && is_array($users)): ?>
-                <?php foreach($users as $user): ?>
-                    <div class="user-row">
-                        <strong>Username:</strong> <span><?= $user->getUsername(); ?></span> | 
-                        <strong>Email:</strong> <span><?= $user->getEmail(); ?></span> |
-                        <strong>Rola:</strong> <span><?= $user->getRole(); ?></span>
-                    </div>
-                    <hr />
-                <?php endforeach; ?>
-            <?php else: ?>
-                <p>Brak użytkowników do wyświetlenia.</p>
-            <?php endif; ?>
-        </section>
+     
+    </div>
 
-        <section class="movie-list">
-            <h2>Dostępne filmy</h2>
-            <?php if(isset($movies) && is_array($movies)): ?>
-                <div class="movies-grid">
-                    <?php foreach($movies as $movie): ?>
-                        <div class="movie-card">
-                            <h3><?= $movie->getTitle(); ?></h3>
-                            <p><?= $movie->getDescription(); ?></p>
-                            <small>Czas trwania: <?= $movie->getDuration(); ?> min</small>
-                        </div>
-                    <?php endforeach; ?>
+    <div class="movies-nav">
+           <form action="/dashboard" method="GET" class="search-form">
+            <input type="text" name="search" placeholder="Search movies..." value="<?= htmlspecialchars($search ?? ''); ?>">
+            <input type="hidden" name="category" value="<?= htmlspecialchars($currentCategory ?? 'All Movies'); ?>">
+            <button type="submit"><img src="/public/img/search-icon.svg" alt="Search"></button>
+        </form>
+  
+    <div class="categories-bar">
+        <?php 
+        $all_categories = ['All Movies', 'Sci-Fi', 'Action', 'Comedy', 'Drama', 'Horror', 'Thriller'];
+        foreach($all_categories as $cat): 
+            $isActive = ($currentCategory === $cat) ? 'active' : '';
+        ?>
+            <a href="/dashboard?category=<?= urlencode($cat); ?>&search=<?= urlencode($search ?? ''); ?>" class="category-badge <?= $isActive; ?>">
+                <?= $cat; ?>
+            </a>
+        <?php endforeach; ?>
+    </div>
+      </div>
+
+    <?php if(!empty($movies)): ?>
+        <div class="movies-grid">
+            <?php foreach($movies as $movie): ?>
+                <div class="movie-card">
+                    <div class="poster-wrapper">
+                        <img src="public/img/<?= htmlspecialchars($movie->getImage()); ?>" alt="<?= htmlspecialchars($movie->getTitle()); ?>" class="movie-poster">
+                    </div>
+                    <div class="movie-card-info">
+                        <h3 class="movie-title"><?= htmlspecialchars($movie->getTitle()); ?></h3>
+                        <p class="movie-meta"><?= htmlspecialchars($movie->getCategories()); ?> • <?= htmlspecialchars($movie->getDuration()); ?>m</p>
+                        <a href="/reservation?id=<?= $movie->getId(); ?>" class="btn-book">🎟 Book Now</a>
+                    </div>
                 </div>
-            <?php endif; ?>
-        </section>
+            <?php endforeach; ?>
+        </div>
+    <?php else: ?>
+        <p class="empty-msg">No movies found matching your criteria.</p>
+    <?php endif; ?>
+
+    <?php if(($totalPages ?? 1) > 1): ?>
+        <div class="pagination">
+            <?php for($i = 1; $i <= $totalPages; $i++): 
+                $isCurrent = ($currentPage == $i) ? 'active' : '';
+            ?>
+                <a href="/dashboard?page=<?= $i; ?>&category=<?= urlencode($currentCategory ?? 'All Movies'); ?>&search=<?= urlencode($search ?? ''); ?>" class="page-btn <?= $isCurrent; ?>">
+                    <?= $i; ?>
+                </a>
+            <?php endfor; ?>
+        </div>
+    <?php endif; ?>
+</section>
     </main>
 </div>
 

@@ -12,6 +12,13 @@ class SecurityController extends AppController {
     }
 
     public function login() {
+
+        if (isset($_SESSION['user_id'])) {
+                $url = "http://$_SERVER[HTTP_HOST]";
+                header("Location: {$url}/dashboard");
+                exit();
+            }
+            
         if (!$this->isPost()) {
             return $this->render("login");
         }

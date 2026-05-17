@@ -1,17 +1,20 @@
 <?php
+
 class Movie {
     private $id;
     private $title;
     private $description;
     private $image;
     private $duration;
+    private $categories; 
 
-    public function __construct($title, $description, $image, $duration, $id = null) {
+    public function __construct($title, $description, $image, $duration, $id = null, $categories = 'Cinema') {
         $this->title = $title;
         $this->description = $description;
         $this->image = $image;
         $this->duration = $duration;
         $this->id = $id;
+        $this->categories = $categories;
     }
 
     public function getId() { return $this->id; }
@@ -19,4 +22,5 @@ class Movie {
     public function getDescription() { return $this->description; }
     public function getImage() { return $this->image; }
     public function getDuration() { return $this->duration; }
+    public function getCategories() { return $this->categories; } 
 }

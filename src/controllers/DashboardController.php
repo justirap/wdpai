@@ -15,11 +15,27 @@ class DashboardController extends AppController {
         $this->reservationRepository = ReservationRepository::getInstance();
     }
 
-    public function index() {
+  public function index() {
         $this->requireLogin();
-        $movies = $this->movieRepository->getMovies();
+
+        $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+        $category = isset($_GET['category']) ? trim($_GET['category']) : 'All Movies';
         
-        return $this->render('dashboard', ['movies' => $movies]);
+        $limit = 8;
+
+        $movies = $this->movieRepository->getMovies($page, $limit, $search, $category);
+        
+        $totalMovies = $this->movieRepository->getTotalMoviesCount($search, $category);
+        $totalPages = ceil($totalMovies / $limit);
+
+        return $this->render('dashboard', [
+            'movies' => $movies,
+            'currentPage' => $page,
+            'totalPages' => $totalPages,
+            'search' => $search,
+            'currentCategory' => $category
+        ]);
     }
 
 }
