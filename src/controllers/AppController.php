@@ -41,10 +41,16 @@ class AppController {
 }
 
 protected function requireAdmin() {
-    $this->requireLogin(); 
-    if ($_SESSION['user_role'] !== 'admin') {
-        die("Brak uprawnień!"); 
+    $this->requireLogin();
+    if (($_SESSION['user_role'] ?? '') !== 'admin') {
+        $url = "http://$_SERVER[HTTP_HOST]/dashboard";
+        header("Location: {$url}");
+        exit();
     }
+}
+
+protected function getSessionUsername(): string {
+    return $_SESSION['user_username'] ?? $_SESSION['user_email'] ?? 'User';
 }
 
 }

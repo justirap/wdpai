@@ -1,0 +1,129 @@
+<?php include __DIR__ . '/partials/header.html'; ?>
+
+<body id="reservation-page">
+    <header class="reservation-topbar">
+        <a href="/dashboard" class="reservation-brand">
+            <i class="fas fa-film"></i>
+            <span>Cinema Reserve</span>
+        </a>
+        <a href="/dashboard" class="reservation-close" title="Close" aria-label="Close">
+            <i class="fas fa-xmark"></i>
+        </a>
+    </header>
+
+    <?php if (!empty($messages)): ?>
+        <div class="reservation-alert">
+            <?php foreach ($messages as $message): ?>
+                <p><?= htmlspecialchars($message); ?></p>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
+
+    <div class="reservation-layout">
+        <section class="reservation-main">
+            <a href="/dashboard" class="reservation-back-mobile" aria-label="Back">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+
+            <div class="reservation-movie-info">
+                <h1><?= htmlspecialchars($movie->getTitle()); ?></h1>
+                <p class="reservation-session"><?= htmlspecialchars($sessionLabel); ?></p>
+                <p class="reservation-datetime"><?= htmlspecialchars($screening->getDateTimeLabel()); ?></p>
+                <a href="/reservation?id=<?= (int) $movie->getId(); ?>" class="reservation-change-showtime">Change showtime</a>
+            </div>
+
+            <div class="screen-area">
+                <div class="screen-glow"></div>
+                <span class="screen-label">SCREEN</span>
+            </div>
+
+            <div class="seat-map-scroll">
+                <div class="seat-map" id="seat-map"
+                     data-rows='<?= htmlspecialchars(json_encode($rows), ENT_QUOTES); ?>'
+                     data-cols="<?= (int) $cols; ?>"
+                     data-aisle-after="<?= (int) $aisleAfter; ?>"
+                     data-occupied='<?= htmlspecialchars(json_encode($occupiedSeats), ENT_QUOTES); ?>'>
+                </div>
+            </div>
+
+            <div class="seat-legend">
+                <div class="legend-item">
+                    <span class="legend-seat available"></span>
+                    <span>Available</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-seat selected"></span>
+                    <span>Selected</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-seat taken"></span>
+                    <span>Taken</span>
+                </div>
+            </div>
+        </section>
+
+        <aside class="reservation-sidebar">
+            <div class="sidebar-header">
+                <h2>Your Reservation</h2>
+                <p>Review your selected items</p>
+            </div>
+
+            <div class="selected-seats-card">
+                <div class="selected-seats-icon">
+                    <i class="fas fa-couch"></i>
+                </div>
+                <div class="selected-seats-text">
+                    <span class="label">Selected Seats</span>
+                    <span class="value" id="selected-seats-label">None</span>
+                </div>
+                <span class="selected-seats-price" id="selected-seats-subtotal">$0.00</span>
+            </div>
+
+            <div class="price-breakdown">
+                <div class="price-row">
+                    <span id="tickets-line">0x Adult Tickets</span>
+                    <span id="tickets-amount">$0.00</span>
+                </div>
+                <div class="price-row">
+                    <span>Booking Fee</span>
+                    <span id="booking-fee-amount">$<?= number_format($bookingFee, 2); ?></span>
+                </div>
+            </div>
+
+            <div class="price-total">
+                <span>Total Price</span>
+                <span id="total-price">$<?= number_format($bookingFee, 2); ?></span>
+            </div>
+
+            <form id="reservation-form" method="POST" action="/reservation">
+                <input type="hidden" name="screening_id" value="<?= (int) $screening->getId(); ?>">
+                <div id="seat-inputs"></div>
+                <button type="submit" class="btn-confirm" id="btn-confirm" disabled>
+                    Confirm Reservation <i class="fas fa-arrow-right"></i>
+                </button>
+            </form>
+        </aside>
+    </div>
+
+    <div class="reservation-mobile-bar">
+        <div class="mobile-summary">
+            <span class="mobile-summary-label" id="mobile-count-label">SELECTED SEATS (0)</span>
+            <span class="mobile-summary-price" id="mobile-total">$0.00</span>
+        </div>
+        <button type="submit" form="reservation-form" class="btn-confirm-mobile" id="btn-confirm-mobile" disabled>
+            Confirm Selection
+        </button>
+    </div>
+
+    <script>
+        window.RESERVATION_CONFIG = {
+            screeningId: <?= (int) $screening->getId(); ?>,
+            occupiedUrl: '/reservation?format=json&screening=<?= (int) $screening->getId(); ?>',
+            ticketPrice: <?= json_encode($ticketPrice); ?>,
+            bookingFee: <?= json_encode($bookingFee); ?>,
+            pollIntervalMs: 3000
+        };
+    </script>
+    <script src="/public/js/reservation.js" defer></script>
+
+<?php include __DIR__ . '/partials/footer.html'; ?>

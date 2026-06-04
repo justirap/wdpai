@@ -1,23 +1,56 @@
+<?php
+$navPath = trim(parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH) ?? '', '/');
+$moviesActive = in_array($navPath, ['dashboard', 'movies', 'reservation'], true) ? 'active' : '';
+$sessionUsername = $_SESSION['user_username'] ?? $_SESSION['user_email'] ?? 'User';
+$sessionEmail = $_SESSION['user_email'] ?? '';
+$isAdmin = ($_SESSION['user_role'] ?? '') === 'admin';
+?>
 <nav class="main-nav">
     <div class="nav-container">
-        <a href="/dashboard" class="nav-logo">
+        <a href="<?= $isAdmin ? '/admin' : '/dashboard'; ?>" class="nav-logo">
             <i class="fas fa-clapperboard"></i>
             <span>Cinema</span>
         </a>
 
         <div class="nav-menu">
-            <ul class="nav-links">
-                <li><a href="/movies" class="active">Movies</a></li>
-                <li><a href="/tickets">Tickets</a></li>
-            </ul>
-            
-            <div class="nav-user">
-                <a href="/logout" title="Wyloguj">
-                    <div class="user-avatar-box">
-                        <i class="fas fa-user"></i>
+            <?php if ($isAdmin): ?>
+                <ul class="nav-links">
+                    <li><a href="/admin" class="<?= str_starts_with($navPath, 'admin') ? 'active' : ''; ?>">Admin Panel</a></li>
+                    <li><a href="/dashboard">Movies</a></li>
+                </ul>
+            <?php else: ?>
+                <ul class="nav-links">
+                    <li><a href="/dashboard" class="<?= $moviesActive; ?>">Movies</a></li>
+                </ul>
+            <?php endif; ?>
+
+            <div class="nav-user-dropdown">
+                <button type="button" class="user-avatar-box nav-user-toggle" id="nav-user-toggle" aria-expanded="false" aria-haspopup="true">
+                    <i class="fas fa-user"></i>
+                </button>
+                <div class="nav-dropdown-menu" id="nav-dropdown-menu" hidden>
+                    <div class="nav-dropdown-header">
+                        <span class="nav-dropdown-name"><?= htmlspecialchars($sessionUsername); ?></span>
+                        <span class="nav-dropdown-email"><?= htmlspecialchars($sessionEmail); ?></span>
                     </div>
-                </a>
+                    <a href="/tickets" class="nav-dropdown-item">
+                        <i class="fas fa-ticket"></i> Tickets
+                    </a>
+                    <button type="button" class="nav-dropdown-item" id="open-contact-modal">
+                        <i class="fas fa-envelope"></i> Contact us
+                    </button>
+                    <?php if ($isAdmin): ?>
+                        <a href="/admin/messages" class="nav-dropdown-item">
+                            <i class="fas fa-inbox"></i> Admin Messages
+                        </a>
+                    <?php endif; ?>
+                    <a href="/logout" class="nav-dropdown-item nav-dropdown-logout">
+                        <i class="fas fa-right-from-bracket"></i> Log out
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 </nav>
+
+<?php include __DIR__ . '/contact-modal.html'; ?>

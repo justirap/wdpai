@@ -1,0 +1,58 @@
+<?php include __DIR__ . '/../partials/header.html'; ?>
+<link rel="stylesheet" href="/public/css/admin.css">
+
+<body id="admin-page">
+<div class="admin-layout">
+    <?php include __DIR__ . '/../partials/admin-sidebar.html'; ?>
+
+    <main class="admin-main">
+        <header class="admin-topbar">
+            <h1>User Management</h1>
+            <a href="/logout" class="admin-logout"><i class="fas fa-right-from-bracket"></i> Log out</a>
+        </header>
+
+        <section class="admin-panel">
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($users as $user): ?>
+                            <tr>
+                                <td>
+                                    <span class="admin-user-cell">
+                                        <span class="admin-avatar"><?= strtoupper(substr($user['username'], 0, 2)); ?></span>
+                                        <?= htmlspecialchars($user['username']); ?>
+                                    </span>
+                                </td>
+                                <td><?= htmlspecialchars($user['email']); ?></td>
+                                <td><span class="role-badge"><?= htmlspecialchars(ucfirst($user['role'])); ?></span></td>
+                                <td>
+                                    <?php if ($user['role'] !== 'admin'): ?>
+                                        <form method="POST" action="/admin/users" class="admin-inline-form"
+                                              onsubmit="return confirm('Delete this user?');">
+                                            <input type="hidden" name="delete_user_id" value="<?= (int) $user['id']; ?>">
+                                            <button type="submit" class="admin-icon-btn" title="Delete user">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    <?php else: ?>
+                                        <span class="admin-muted">—</span>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+
+<?php include __DIR__ . '/../partials/footer.html'; ?>

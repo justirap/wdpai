@@ -1,0 +1,56 @@
+<?php include __DIR__ . '/../partials/header.html'; ?>
+<link rel="stylesheet" href="/public/css/admin.css">
+
+<body id="admin-page">
+<div class="admin-layout">
+    <?php include __DIR__ . '/../partials/admin-sidebar.html'; ?>
+
+    <main class="admin-main">
+        <header class="admin-topbar">
+            <h1>Reservations</h1>
+            <a href="/logout" class="admin-logout"><i class="fas fa-right-from-bracket"></i> Log out</a>
+        </header>
+
+        <section class="admin-panel">
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Movie</th>
+                            <th>Date</th>
+                            <th>Seats</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (empty($reservations)): ?>
+                            <tr><td colspan="5" class="admin-empty-row">No reservations yet.</td></tr>
+                        <?php else: ?>
+                            <?php foreach ($reservations as $row): ?>
+                                <tr>
+                                    <td>
+                                        <span class="admin-user-cell">
+                                            <span class="admin-avatar"><?= strtoupper(substr($row['username'], 0, 1)); ?></span>
+                                            <?= htmlspecialchars($row['username']); ?>
+                                        </span>
+                                    </td>
+                                    <td><?= htmlspecialchars($row['movie_title']); ?></td>
+                                    <td><?= date('M j, Y g:i A', strtotime($row['show_date'] . ' ' . $row['show_time'])); ?></td>
+                                    <td>
+                                        <?php foreach (explode(', ', $row['seats']) as $seat): ?>
+                                            <span class="admin-seat-badge"><?= htmlspecialchars($seat); ?></span>
+                                        <?php endforeach; ?>
+                                    </td>
+                                    <td><span class="status-badge paid">PAID</span></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+
+<?php include __DIR__ . '/../partials/footer.html'; ?>

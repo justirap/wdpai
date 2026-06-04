@@ -1,0 +1,52 @@
+<?php include __DIR__ . '/partials/header.html'; ?>
+
+<body id="reservation-page" class="showtimes-page">
+    <header class="reservation-topbar">
+        <a href="/dashboard" class="reservation-brand">
+            <i class="fas fa-film"></i>
+            <span>Cinema Reserve</span>
+        </a>
+        <a href="/dashboard" class="reservation-close" title="Close" aria-label="Close">
+            <i class="fas fa-xmark"></i>
+        </a>
+    </header>
+
+    <div class="showtimes-container">
+        <a href="/dashboard" class="reservation-back-mobile" aria-label="Back">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+
+        <div class="showtimes-movie-header">
+            <img src="/public/img/<?= htmlspecialchars($movie->getImage()); ?>" alt="" class="showtimes-poster">
+            <div>
+                <h1><?= htmlspecialchars($movie->getTitle()); ?></h1>
+                <p class="showtimes-meta"><?= htmlspecialchars($movie->getCategories()); ?> • <?= (int) $movie->getDuration(); ?> min</p>
+                <p class="showtimes-hint">Choose a showtime</p>
+            </div>
+        </div>
+
+        <?php if (!empty($screenings)): ?>
+            <ul class="showtimes-list">
+                <?php foreach ($screenings as $screening): ?>
+                    <li>
+                        <a href="/reservation?screening=<?= (int) $screening->getId(); ?>" class="showtime-card">
+                            <div class="showtime-date">
+                                <span class="showtime-day"><?= date('d', strtotime($screening->getShowDate())); ?></span>
+                                <span class="showtime-month"><?= date('M', strtotime($screening->getShowDate())); ?></span>
+                            </div>
+                            <div class="showtime-details">
+                                <span class="showtime-datetime"><?= htmlspecialchars($screening->getDateTimeLabel()); ?></span>
+                                <span class="showtime-venue"><?= htmlspecialchars($screening->getSessionLabel()); ?></span>
+                            </div>
+                            <span class="showtime-arrow"><i class="fas fa-chevron-right"></i></span>
+                        </a>
+                    </li>
+                <?php endforeach; ?>
+            </ul>
+        <?php else: ?>
+            <p class="showtimes-empty">No upcoming showtimes for this movie.</p>
+            <a href="/dashboard" class="btn-primary showtimes-back-btn">Back to movies</a>
+        <?php endif; ?>
+    </div>
+
+<?php include __DIR__ . '/partials/footer.html'; ?>

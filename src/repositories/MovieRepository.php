@@ -17,6 +17,33 @@ class MovieRepository extends Repository {
         return self::$instance;
     }
 
+    public function getMovieById(int $id): ?Movie {
+        $stmt = $this->database->connect()->prepare('
+            SELECT m.*, STRING_AGG(c.name, \', \') AS categories
+            FROM movies m
+            LEFT JOIN movie_categories mc ON m.id = mc.movie_id
+            LEFT JOIN categories c ON mc.category_id = c.id
+            WHERE m.id = :id
+            GROUP BY m.id
+        ');
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        $movie = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$movie) {
+            return null;
+        }
+
+        return new Movie(
+            $movie['title'],
+            $movie['description'],
+            $movie['image'],
+            $movie['duration'],
+            $movie['id'],
+            $movie['categories'] ?? 'Cinema'
+        );
+    }
+
 public function getMovies(int $page = 1, int $limit = 8, string $search = '', string $category = ''): array {
         $result = [];
         
@@ -95,5 +122,55 @@ public function getMovies(int $page = 1, int $limit = 8, string $search = '', st
         }
         $stmt->execute();
         return $stmt->fetchColumn();
+    }
+
+    public function getAllMoviesAdmin(): array {
+        $stmt = $this->database->connect()->query('
+            SELECT m.*, STRING_AGG(c.name, \', \' ORDER BY c.name) AS categories
+            FROM movies m
+            LEFT JOIN movie_categories mc ON m.id = mc.movie_id
+            LEFT JOIN categories c ON mc.category_id = c.id
+            GROUP BY m.id
+            ORDER BY m.id DESC
+        ');
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    }
+
+    public function getAllCategories(): array {
+        $stmt = $this->database->connect()->query('
+            SELECT id, name FROM categories ORDER BY name ASC
+        ');
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    }
+
+    public function createMovie(string $title, string $description, string $image, int $duration): int {
+        $stmt = $this->database->connect()->prepare('
+            INSERT INTO movies (title, description, image, duration)
+            VALUES (:title, :description, :image, :duration)
+            RETURNING id
+        ');
+        $stmt->execute([
+            ':title' => $title,
+            ':description' => $description,
+            ':image' => $image,
+            ':duration' => $duration,
+        ]);
+        return (int) $stmt->fetchColumn();
+    }
+
+    public function attachCategories(int $movieId, array $categoryIds): void {
+        if (empty($categoryIds)) {
+            return;
+        }
+        $pdo = $this->database->connect();
+        $stmt = $pdo->prepare('
+            INSERT INTO movie_categories (movie_id, category_id) VALUES (:movie_id, :category_id)
+        ');
+        foreach ($categoryIds as $categoryId) {
+            $stmt->execute([
+                ':movie_id' => $movieId,
+                ':category_id' => (int) $categoryId,
+            ]);
+        }
     }
 }

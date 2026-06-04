@@ -1,0 +1,60 @@
+<?php include __DIR__ . '/partials/header.html'; ?>
+<?php include __DIR__ . '/partials/nav.html'; ?>
+
+<body id="tickets-page">
+    <div class="container layout">
+        <main class="tickets-main">
+            <div class="tickets-header">
+                <h2>My Tickets</h2>
+                <p class="tickets-subtitle">Your upcoming screenings and reserved seats</p>
+            </div>
+
+            <?php if (!empty($bookings)): ?>
+                <div class="tickets-list">
+                    <?php foreach ($bookings as $booking):
+                        $ticketTotal = $booking->getTicketCount() * $ticketPrice;
+                        $orderTotal = $ticketTotal + $bookingFee;
+                    ?>
+                        <article class="ticket-card">
+                            <div class="ticket-poster">
+                                <img src="/public/img/<?= htmlspecialchars($booking->getImage()); ?>"
+                                     alt="<?= htmlspecialchars($booking->getTitle()); ?>">
+                            </div>
+                            <div class="ticket-body">
+                                <h3 class="ticket-title"><?= htmlspecialchars($booking->getTitle()); ?></h3>
+                                <p class="ticket-datetime">
+                                    <i class="fas fa-calendar"></i>
+                                    <?= htmlspecialchars($booking->getDateTimeLabel()); ?>
+                                </p>
+                                <p class="ticket-venue">
+                                    <i class="fas fa-location-dot"></i>
+                                    <?= htmlspecialchars($booking->getSessionLabel()); ?>
+                                </p>
+                                <p class="ticket-seats">
+                                    <i class="fas fa-couch"></i>
+                                    Seats: <strong><?= htmlspecialchars($booking->getSeatsLabel()); ?></strong>
+                                    (<?= (int) $booking->getTicketCount(); ?> ticket<?= $booking->getTicketCount() !== 1 ? 's' : ''; ?>)
+                                </p>
+                                <p class="ticket-booked">
+                                    Booked on <?= date('M j, Y g:i A', strtotime($booking->getBookedAt())); ?>
+                                </p>
+                            </div>
+                            <div class="ticket-price">
+                                <span class="ticket-price-label">Total</span>
+                                <span class="ticket-price-value">$<?= number_format($orderTotal, 2); ?></span>
+                            </div>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
+            <?php else: ?>
+                <div class="tickets-empty">
+                    <i class="fas fa-ticket"></i>
+                    <h3>No tickets yet</h3>
+                    <p>Browse movies and book your first screening.</p>
+                    <a href="/dashboard" class="btn-primary tickets-cta">Browse Movies</a>
+                </div>
+            <?php endif; ?>
+        </main>
+    </div>
+
+<?php include __DIR__ . '/partials/footer.html'; ?>

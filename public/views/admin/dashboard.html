@@ -1,0 +1,127 @@
+<?php include __DIR__ . '/../partials/header.html'; ?>
+<link rel="stylesheet" href="/public/css/admin.css">
+
+<body id="admin-page">
+<div class="admin-layout">
+    <?php include __DIR__ . '/../partials/admin-sidebar.html'; ?>
+
+    <main class="admin-main">
+        <header class="admin-topbar">
+            <h1>Dashboard Overview</h1>
+            <a href="/logout" class="admin-logout"><i class="fas fa-right-from-bracket"></i> Log out</a>
+        </header>
+
+        <div class="admin-stats">
+            <div class="admin-stat-card">
+                <span class="admin-stat-label">Total Revenue</span>
+                <span class="admin-stat-value">$<?= number_format($stats['totalRevenue'], 0); ?></span>
+            
+            </div>
+            <div class="admin-stat-card">
+                <span class="admin-stat-label">Tickets Sold</span>
+                <span class="admin-stat-value"><?= number_format($stats['ticketsSold']); ?></span>
+        
+            </div>
+            <div class="admin-stat-card">
+                <span class="admin-stat-label">Active Users</span>
+                <span class="admin-stat-value"><?= number_format($stats['activeUsers']); ?></span>
+            </div>
+            <div class="admin-stat-card">
+                <span class="admin-stat-label">Avg. Occupancy</span>
+                <span class="admin-stat-value"><?= $stats['avgOccupancy']; ?>%</span>
+            </div>
+        </div>
+
+        <section class="admin-panel">
+            <div class="admin-panel-head">
+                <h2>Recent Reservations</h2>
+                <a href="/admin/reservations">View All</a>
+            </div>
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Movie</th>
+                            <th>Date</th>
+                            <th>Seats</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (empty($recentReservations)): ?>
+                            <tr><td colspan="5" class="admin-empty-row">No reservations yet.</td></tr>
+                        <?php else: ?>
+                            <?php foreach ($recentReservations as $row): ?>
+                                <tr>
+                                    <td>
+                                        <span class="admin-user-cell">
+                                            <span class="admin-avatar"><?= strtoupper(substr($row['username'], 0, 1)); ?></span>
+                                            <?= htmlspecialchars($row['username']); ?>
+                                        </span>
+                                    </td>
+                                    <td><?= htmlspecialchars($row['movie_title']); ?></td>
+                                    <td><?= date('M j, Y g:i A', strtotime($row['show_date'] . ' ' . $row['show_time'])); ?></td>
+                                    <td>
+                                        <?php foreach (explode(', ', $row['seats']) as $seat): ?>
+                                            <span class="admin-seat-badge"><?= htmlspecialchars($seat); ?></span>
+                                        <?php endforeach; ?>
+                                    </td>
+                                    <td><span class="status-badge paid">PAID</span></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="admin-panel">
+            <div class="admin-panel-head">
+                <h2>User Management</h2>
+                <a href="/admin/users">View All</a>
+            </div>
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($users as $user): ?>
+                            <tr>
+                                <td>
+                                    <span class="admin-user-cell">
+                                        <span class="admin-avatar"><?= strtoupper(substr($user['username'], 0, 2)); ?></span>
+                                        <?= htmlspecialchars($user['username']); ?>
+                                    </span>
+                                </td>
+                                <td><?= htmlspecialchars($user['email']); ?></td>
+                                <td><span class="role-badge"><?= htmlspecialchars(ucfirst($user['role'])); ?></span></td>
+                                <td>
+                                    <?php if ($user['role'] !== 'admin'): ?>
+                                        <form method="POST" action="/admin/users" class="admin-inline-form"
+                                              onsubmit="return confirm('Delete this user?');">
+                                            <input type="hidden" name="delete_user_id" value="<?= (int) $user['id']; ?>">
+                                            <button type="submit" class="admin-icon-btn" title="Delete user">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    <?php else: ?>
+                                        <span class="admin-muted">—</span>
+                                    <?php endif; ?>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+
+<?php include __DIR__ . '/../partials/footer.html'; ?>

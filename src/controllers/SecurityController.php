@@ -15,7 +15,8 @@ class SecurityController extends AppController {
 
         if (isset($_SESSION['user_id'])) {
                 $url = "http://$_SERVER[HTTP_HOST]";
-                header("Location: {$url}/dashboard");
+                $destination = ($_SESSION['user_role'] ?? '') === 'admin' ? '/admin' : '/dashboard';
+                header("Location: {$url}{$destination}");
                 exit();
             }
             
@@ -42,10 +43,12 @@ class SecurityController extends AppController {
      
         $_SESSION['user_id'] = $user->getId();
         $_SESSION['user_email'] = $user->getEmail();
+        $_SESSION['user_username'] = $user->getUsername();
         $_SESSION['user_role'] = $user->getRole(); 
 
         $url = "http://$_SERVER[HTTP_HOST]";
-        header("Location: {$url}/dashboard");
+        $destination = $user->isAdmin() ? '/admin' : '/dashboard';
+        header("Location: {$url}{$destination}");
         exit();
     }
 

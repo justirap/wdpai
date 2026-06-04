@@ -2,13 +2,11 @@
 // .env 
 require_once "config.php";
 
-// singleton 
 class Database {
     private $username;
     private $password;
     private $host;
     private $database;
-    // private $conn;
 
     public function __construct()
     {
@@ -28,17 +26,14 @@ class Database {
                 ["sslmode"  => "prefer"]
             );
 
-            // set the PDO error mode to exception
             $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             return $conn;
         }
         catch(PDOException $e) {
-            // change to error page e.g. 404 not found etc.
             die("Connection failed: " . $e->getMessage());
         }
     }
 
     public function disconnect() {
-        // $this->conn = null;
     }
 }

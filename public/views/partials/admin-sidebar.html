@@ -1,0 +1,41 @@
+<?php
+$activeSection = $activeSection ?? 'dashboard';
+$unreadMessages = $unreadMessages ?? 0;
+?>
+<aside class="admin-sidebar">
+    <div class="admin-brand">
+        <i class="fas fa-film"></i>
+        <div>
+            <span class="admin-brand-title">CineAdmin</span>
+            <span class="admin-brand-sub">Management Portal</span>
+        </div>
+    </div>
+
+    <nav class="admin-nav">
+        <a href="/admin" class="admin-nav-item <?= $activeSection === 'dashboard' ? 'active' : ''; ?>">
+            <i class="fas fa-chart-pie"></i> Dashboard
+        </a>
+        <a href="/admin/reservations" class="admin-nav-item <?= $activeSection === 'reservations' ? 'active' : ''; ?>">
+            <i class="fas fa-ticket"></i> Reservations
+        </a>
+        <a href="/admin/movies" class="admin-nav-item <?= $activeSection === 'movies' ? 'active' : ''; ?>">
+            <i class="fas fa-clapperboard"></i> Movies
+        </a>
+        <a href="/admin/users" class="admin-nav-item <?= $activeSection === 'users' ? 'active' : ''; ?>">
+            <i class="fas fa-users"></i> Users
+        </a>
+        <a href="/admin/messages" class="admin-nav-item <?= $activeSection === 'messages' ? 'active' : ''; ?>">
+            <i class="fas fa-envelope"></i> Messages
+            <?php if ($unreadMessages > 0): ?>
+                <span class="admin-badge"><?= (int) $unreadMessages; ?></span>
+            <?php endif; ?>
+        </a>
+        <a href="/admin/reports" class="admin-nav-item <?= $activeSection === 'reports' ? 'active' : ''; ?>">
+            <i class="fas fa-chart-line"></i> Reports
+        </a>
+    </nav>
+
+    <a href="/dashboard" class="admin-back-link">
+        <i class="fas fa-arrow-left"></i> Back to site
+    </a>
+</aside>

@@ -1,0 +1,150 @@
+<?php include __DIR__ . '/../partials/header.html'; ?>
+<link rel="stylesheet" href="/public/css/admin.css">
+
+<body id="admin-page">
+<div class="admin-layout">
+    <?php include __DIR__ . '/../partials/admin-sidebar.html'; ?>
+
+    <main class="admin-main">
+        <header class="admin-topbar">
+            <h1>Movies</h1>
+            <a href="/logout" class="admin-logout"><i class="fas fa-right-from-bracket"></i> Log out</a>
+        </header>
+
+        <?php if (!empty($messages)): ?>
+            <div class="admin-alert success">
+                <?php foreach ($messages as $msg): ?>
+                    <p><?= htmlspecialchars($msg); ?></p>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (!empty($errors)): ?>
+            <div class="admin-alert error">
+                <?php foreach ($errors as $err): ?>
+                    <p><?= htmlspecialchars($err); ?></p>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
+
+        <section class="admin-panel admin-movie-form-panel">
+            <h2>Add New Movie</h2>
+            <p class="admin-form-hint">Poster will be saved to <code>public/img/</code>. Four default showtimes are created automatically.</p>
+
+            <form method="POST" action="/admin/movies" enctype="multipart/form-data" class="admin-movie-form">
+                <div class="admin-form-grid">
+                    <div class="admin-form-field">
+                        <label for="title">Title</label>
+                        <input type="text" id="title" name="title" required
+                               value="<?= htmlspecialchars($old['title'] ?? ''); ?>"
+                               placeholder="Movie title">
+                    </div>
+
+                    <div class="admin-form-field">
+                        <label for="duration">Duration (minutes)</label>
+                        <input type="number" id="duration" name="duration" min="1" max="600" required
+                               value="<?= htmlspecialchars($old['duration'] ?? ''); ?>"
+                               placeholder="120">
+                    </div>
+                </div>
+
+                <div class="admin-form-field">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" rows="4" required
+                              placeholder="Short plot description"><?= htmlspecialchars($old['description'] ?? ''); ?></textarea>
+                </div>
+
+                <div class="admin-form-field">
+                    <label>Categories</label>
+                    <div class="admin-category-checkboxes">
+                        <?php
+                        $selected = $old['categories'] ?? [];
+                        if (!is_array($selected)) {
+                            $selected = [];
+                        }
+                        foreach ($categories as $cat):
+                            $checked = in_array((string) $cat['id'], array_map('strval', $selected), true) ? 'checked' : '';
+                        ?>
+                            <label class="admin-checkbox-label">
+                                <input type="checkbox" name="categories[]" value="<?= (int) $cat['id']; ?>" <?= $checked; ?>>
+                                <?= htmlspecialchars($cat['name']); ?>
+                            </label>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
+                <div class="admin-form-field">
+                    <label for="poster">Poster image</label>
+                    <div class="admin-file-upload">
+                        <i class="fas fa-image"></i>
+                        <input type="file" id="poster" name="poster" accept="image/jpeg,image/png,image/webp" required>
+                        <span class="admin-file-hint">JPG, PNG or WebP — max 5 MB</span>
+                    </div>
+                    <div class="admin-poster-preview" id="poster-preview" hidden>
+                        <img src="" alt="Preview" id="poster-preview-img">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-admin-submit">
+                    <i class="fas fa-plus"></i> Add Movie
+                </button>
+            </form>
+        </section>
+
+        <section class="admin-panel">
+            <div class="admin-panel-head">
+                <h2>All Movies (<?= count($movies); ?>)</h2>
+            </div>
+            <div class="admin-table-wrap">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Poster</th>
+                            <th>Title</th>
+                            <th>Categories</th>
+                            <th>Duration</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (empty($movies)): ?>
+                            <tr><td colspan="4" class="admin-empty-row">No movies in database.</td></tr>
+                        <?php else: ?>
+                            <?php foreach ($movies as $movie): ?>
+                                <tr>
+                                    <td>
+                                        <img src="/public/img/<?= htmlspecialchars($movie['image']); ?>"
+                                             alt="" class="admin-movie-thumb">
+                                    </td>
+                                    <td><?= htmlspecialchars($movie['title']); ?></td>
+                                    <td><?= htmlspecialchars($movie['categories'] ?? '—'); ?></td>
+                                    <td><?= (int) $movie['duration']; ?> min</td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script>
+(function () {
+    const input = document.getElementById('poster');
+    const preview = document.getElementById('poster-preview');
+    const img = document.getElementById('poster-preview-img');
+    if (!input || !preview || !img) return;
+
+    input.addEventListener('change', () => {
+        const file = input.files[0];
+        if (!file) {
+            preview.hidden = true;
+            return;
+        }
+        img.src = URL.createObjectURL(file);
+        preview.hidden = false;
+    });
+})();
+</script>
+
+<?php include __DIR__ . '/../partials/footer.html'; ?>

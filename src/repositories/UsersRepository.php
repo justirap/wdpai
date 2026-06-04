@@ -36,6 +36,15 @@ class UsersRepository extends Repository {
         );
     }
 
+    public function deleteUser(int $id): bool {
+        $stmt = $this->database->connect()->prepare('
+            DELETE FROM users WHERE id = :id AND role != \'admin\'
+        ');
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->rowCount() > 0;
+    }
+
     public function createUser(string $email, string $password, string $username) {
         $stmt = $this->database->connect()->prepare('
             INSERT INTO users (username, email, password, role)

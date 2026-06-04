@@ -1,0 +1,47 @@
+<?php include __DIR__ . '/../partials/header.html'; ?>
+<link rel="stylesheet" href="/public/css/admin.css">
+
+<body id="admin-page">
+<div class="admin-layout">
+    <?php include __DIR__ . '/../partials/admin-sidebar.html'; ?>
+
+    <main class="admin-main">
+        <header class="admin-topbar">
+            <h1>Contact Messages</h1>
+            <a href="/logout" class="admin-logout"><i class="fas fa-right-from-bracket"></i> Log out</a>
+        </header>
+
+        <section class="admin-panel">
+            <?php if (empty($messages)): ?>
+                <p class="admin-empty-row">No messages from users yet.</p>
+            <?php else: ?>
+                <div class="admin-messages-list">
+                    <?php foreach ($messages as $msg):
+                        $isRead = $msg['is_read'] === true || $msg['is_read'] === 't' || $msg['is_read'] === 1 || $msg['is_read'] === '1';
+                    ?>
+                        <article class="admin-message-card <?= $isRead ? 'read' : 'unread'; ?>">
+                            <div class="admin-message-head">
+                                <div>
+                                    <h3><?= htmlspecialchars($msg['name']); ?></h3>
+                                    <span class="admin-message-email"><?= htmlspecialchars($msg['email']); ?></span>
+                                </div>
+                                <div class="admin-message-meta">
+                                    <span><?= date('M j, Y g:i A', strtotime($msg['created_at'])); ?></span>
+                                    <?php if (!$isRead): ?>
+                                        <span class="status-badge pending">NEW</span>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <p class="admin-message-body"><?= nl2br(htmlspecialchars($msg['message'])); ?></p>
+                            <?php if (!$isRead): ?>
+                                <a href="/admin/messages?read=<?= (int) $msg['id']; ?>" class="admin-mark-read">Mark as read</a>
+                            <?php endif; ?>
+                        </article>
+                    <?php endforeach; ?>
+                </div>
+            <?php endif; ?>
+        </section>
+    </main>
+</div>
+
+<?php include __DIR__ . '/../partials/footer.html'; ?>

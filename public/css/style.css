@@ -436,7 +436,7 @@ p.subtitle { color: var(--text-dim); margin: 10px 0 30px; font-size: 14px; }
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;      
-    padding: 20px 0;    
+    padding: 20px 15px;    
     box-sizing: border-box;
 }
 
@@ -545,5 +545,1096 @@ p.subtitle { color: var(--text-dim); margin: 10px 0 30px; font-size: 14px; }
 
     .categories-bar{
         width: 100%;
+    }
+}
+
+
+html:has(body#reservation-page) {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+body#reservation-page {
+    background: #0a0a0a;
+    min-height: 100vh;
+    height: auto;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    display: block;
+}
+
+body#reservation-page * {
+    box-sizing: border-box;
+}
+
+body#reservation-page .reservation-topbar,
+body#reservation-page .reservation-alert,
+body#reservation-page .reservation-layout,
+body#reservation-page .reservation-main,
+body#reservation-page .reservation-movie-info {
+    overflow-x: hidden;
+    min-width: 0;
+    width: 100%;
+}
+
+body#reservation-page .reservation-movie-info h1 {
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+body#reservation-page .main-footer {
+    display: none;
+}
+
+.reservation-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    max-width: 100%;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.reservation-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-main);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.reservation-brand i {
+    color: var(--primary);
+    font-size: 22px;
+}
+
+.reservation-close {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.06);
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.reservation-close:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: var(--text-main);
+}
+
+.reservation-alert {
+    max-width: 100%;
+    margin: 12px auto 0;
+    padding: 12px 20px;
+    background: rgba(234, 42, 51, 0.15);
+    border: 1px solid var(--primary);
+    border-radius: 10px;
+    color: #ffb4b8;
+    font-size: 14px;
+}
+
+.reservation-alert p {
+    margin: 0;
+}
+
+.reservation-layout {
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 32px;
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 24px;
+    padding-bottom: 100px;
+    min-width: 0;
+}
+
+.reservation-back-mobile {
+    display: none;
+    color: var(--text-main);
+    text-decoration: none;
+    font-size: 20px;
+    margin-bottom: 12px;
+}
+
+.reservation-movie-info h1 {
+    margin: 0 0 8px;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-weight: 700;
+}
+
+.reservation-session {
+    color: var(--text-dim);
+    margin: 0 0 28px;
+    font-size: 14px;
+}
+
+.screen-area {
+    text-align: center;
+    margin-bottom: 36px;
+}
+
+.screen-glow {
+    height: 4px;
+    max-width: 520px;
+    width: 100%;
+    margin: 0 auto 10px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, transparent, var(--primary), transparent);
+    box-shadow: 0 0 20px rgba(234, 42, 51, 0.6);
+}
+
+.screen-label {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--text-dim);
+    max-width: 100%;
+}
+
+
+.seat-map-scroll {
+    width: 100%;
+    max-width: 100%;
+    overflow: visible;
+    padding: 4px 0 12px;
+    margin-bottom: 8px;
+    display: flex;
+    justify-content: center;
+}
+
+.seat-map {
+    display: block;
+    width: max-content;
+    max-width: none;
+    margin: 0 auto;
+}
+
+.seat-grid {
+    --seat-size: 40px;
+    --aisle-size: 16px;
+    --row-label-size: 28px;
+    display: grid;
+    gap: 8px;
+    grid-template-columns:
+        var(--row-label-size)
+        repeat(var(--seat-cols-left, 2), var(--seat-size))
+        var(--aisle-size)
+        repeat(var(--seat-cols-right, 6), var(--seat-size));
+    width: max-content;
+    max-width: none;
+    margin: 0 auto;
+}
+
+.seat-aisle {
+    width: var(--aisle-size);
+    min-height: 1px;
+}
+
+.seat-grid-corner {
+    grid-column: 1;
+}
+
+.seat-col-label {
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: var(--seat-size, 40px);
+    width: var(--seat-size, 40px);
+}
+
+.seat-row-label {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-dim);
+    font-weight: 600;
+    line-height: var(--seat-size, 40px);
+    width: var(--row-label-size, 28px);
+}
+
+.seat-btn {
+    width: var(--seat-size, 40px);
+    height: var(--seat-size, 40px);
+    border-radius: 8px 8px 4px 4px;
+    border: 2px solid #3a3a3a;
+    background: transparent;
+    color: #666;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    font-family: inherit;
+}
+
+.seat-btn.available:hover {
+    border-color: var(--primary);
+    color: var(--text-main);
+}
+
+.seat-btn.selected {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+
+.seat-btn.taken {
+    background: #2a2a2a;
+    border-color: #2a2a2a;
+    color: #555;
+    cursor: not-allowed;
+}
+
+.seat-legend {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    margin-top: 32px;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-dim);
+}
+
+.legend-seat {
+    width: 22px;
+    height: 22px;
+    border-radius: 5px 5px 3px 3px;
+    display: inline-block;
+}
+
+.legend-seat.available {
+    border: 2px solid #3a3a3a;
+    background: transparent;
+}
+
+.legend-seat.selected {
+    background: var(--primary);
+    border: 2px solid var(--primary);
+}
+
+.legend-seat.taken {
+    background: #2a2a2a;
+    border: 2px solid #2a2a2a;
+}
+
+.reservation-sidebar {
+    background: #141414;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 24px;
+    height: fit-content;
+    position: sticky;
+    top: 24px;
+}
+
+.sidebar-header h2 {
+    margin: 0 0 4px;
+    font-size: 1.25rem;
+}
+
+.sidebar-header p {
+    margin: 0 0 20px;
+    color: var(--text-dim);
+    font-size: 13px;
+}
+
+.selected-seats-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: #1c1c1c;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 20px;
+}
+
+.selected-seats-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: rgba(234, 42, 51, 0.2);
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.selected-seats-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.selected-seats-text .label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+}
+
+.selected-seats-text .value {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.selected-seats-price {
+    font-weight: 700;
+    font-size: 15px;
+    white-space: nowrap;
+}
+
+.price-breakdown {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    padding-top: 16px;
+    margin-bottom: 16px;
+}
+
+.price-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    color: var(--text-dim);
+    margin-bottom: 10px;
+}
+
+.price-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 24px;
+    font-weight: 600;
+}
+
+.price-total span:last-child {
+    font-size: 1.75rem;
+    color: var(--primary);
+    font-weight: 700;
+}
+
+#reservation-form {
+    margin: 0;
+}
+
+.btn-confirm {
+    width: 100%;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: opacity 0.2s, transform 0.2s;
+}
+
+.btn-confirm:hover:not(:disabled) {
+    opacity: 0.92;
+    transform: translateY(-1px);
+}
+
+.btn-confirm:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.reservation-mobile-bar {
+    display: none;
+}
+
+@media (max-width: 900px) {
+    .reservation-layout {
+        grid-template-columns: 1fr;
+        padding-bottom: 120px;
+    }
+
+    .reservation-sidebar .btn-confirm {
+        display: none;
+    }
+
+    .reservation-sidebar {
+        display: none;
+    }
+
+    .reservation-main {
+        order: 1;
+    }
+
+    .reservation-back-mobile {
+        display: inline-flex;
+    }
+
+    .reservation-topbar .reservation-brand span {
+        display: none;
+    }
+
+    .reservation-mobile-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        max-width: 100%;
+        padding: 16px 20px;
+        background: #111;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        z-index: 100;
+        box-sizing: border-box;
+    }
+
+    .mobile-summary-label {
+        display: block;
+        font-size: 11px;
+        color: var(--text-dim);
+        letter-spacing: 0.05em;
+    }
+
+    .mobile-summary-price {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--primary);
+    }
+
+    .btn-confirm-mobile {
+        flex: 1;
+        max-width: 200px;
+        background: var(--primary);
+        color: #fff;
+        border: none;
+        padding: 14px 20px;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        font-family: inherit;
+    }
+
+    .btn-confirm-mobile:disabled {
+        opacity: 0.45;
+        cursor: not-allowed;
+    }
+
+    body#reservation-page .reservation-layout {
+        padding-bottom: 100px;
+        padding-left: 12px;
+        padding-right: 12px;
+        gap: 16px;
+    }
+
+    .reservation-topbar {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .reservation-alert {
+        margin-left: 12px;
+        margin-right: 12px;
+        width: calc(100% - 24px);
+    }
+
+
+    .seat-map-scroll {
+        display: block;
+        min-width: 0;
+        overflow-x: auto;
+        overflow-y: hidden;
+        overscroll-behavior-x: contain;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-x;
+        justify-content: flex-start;
+    }
+
+    .seat-map-scroll::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .seat-map-scroll::-webkit-scrollbar-thumb {
+        background: rgba(234, 42, 51, 0.5);
+        border-radius: 3px;
+    }
+
+    .seat-map-scroll::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.06);
+    }
+}
+
+@media (max-width: 480px) {
+    .seat-grid {
+        --seat-size: 34px;
+        --aisle-size: 12px;
+        --row-label-size: 24px;
+        gap: 6px;
+    }
+
+    .seat-btn {
+        font-size: 11px;
+        border-width: 1.5px;
+    }
+
+    .seat-legend {
+        gap: 16px;
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 360px) {
+    .seat-grid {
+        --seat-size: 28px;
+        --aisle-size: 10px;
+        --row-label-size: 22px;
+        gap: 5px;
+    }
+
+    .seat-btn {
+        font-size: 10px;
+    }
+}
+
+.reservation-datetime {
+    color: var(--text-dim);
+    font-size: 14px;
+    margin: 4px 0 10px;
+}
+
+.reservation-change-showtime {
+    display: inline-block;
+    font-size: 13px;
+    color: var(--primary);
+    text-decoration: none;
+    margin-bottom: 8px;
+}
+
+.reservation-change-showtime:hover {
+    text-decoration: underline;
+}
+
+
+.showtimes-container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+.showtimes-movie-header {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    margin-bottom: 32px;
+}
+
+.showtimes-poster {
+    width: 100px;
+    border-radius: 12px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.showtimes-movie-header h1 {
+    margin: 0 0 8px;
+    font-size: 1.5rem;
+}
+
+.showtimes-meta {
+    color: var(--text-dim);
+    font-size: 14px;
+    margin: 0 0 8px;
+}
+
+.showtimes-hint {
+    color: var(--text-main);
+    font-size: 15px;
+    margin: 0;
+    opacity: 0.85;
+}
+
+.showtimes-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.showtime-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background: #141414;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 14px;
+    text-decoration: none;
+    color: var(--text-main);
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.showtime-card:hover {
+    border-color: var(--primary);
+    background: #1a1212;
+}
+
+.showtime-date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 52px;
+    padding: 8px 12px;
+    background: rgba(234, 42, 51, 0.15);
+    border-radius: 10px;
+}
+
+.showtime-day {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--primary);
+}
+
+.showtime-month {
+    font-size: 12px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-top: 4px;
+}
+
+.showtime-details {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.showtime-datetime {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.showtime-venue {
+    font-size: 13px;
+    color: var(--text-dim);
+}
+
+.showtime-arrow {
+    color: var(--text-dim);
+    font-size: 14px;
+}
+
+.showtimes-empty {
+    text-align: center;
+    color: var(--text-dim);
+    margin-bottom: 20px;
+}
+
+.showtimes-back-btn {
+    display: block;
+    max-width: 280px;
+    margin: 0 auto;
+    text-align: center;
+    text-decoration: none;
+}
+
+
+.tickets-header {
+    margin-bottom: 28px;
+}
+
+.tickets-header h2 {
+    margin: 0 0 6px;
+    font-size: 2rem;
+}
+
+.tickets-subtitle {
+    color: var(--text-dim);
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.tickets-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.ticket-card {
+    display: flex;
+    gap: 20px;
+    align-items: stretch;
+    background: #3D2525;
+    border-radius: 14px;
+    padding: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.ticket-poster {
+    flex-shrink: 0;
+    width: 90px;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.ticket-poster img {
+    width: 100%;
+    height: 100%;
+    min-height: 130px;
+    object-fit: cover;
+    display: block;
+}
+
+.ticket-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.ticket-title {
+    margin: 0 0 10px;
+    font-size: 1.2rem;
+}
+
+.ticket-datetime,
+.ticket-venue,
+.ticket-seats,
+.ticket-booked {
+    margin: 0 0 6px;
+    font-size: 0.9rem;
+    color: #bcb2af;
+}
+
+.ticket-datetime i,
+.ticket-venue i,
+.ticket-seats i {
+    width: 18px;
+    color: var(--primary);
+    margin-right: 6px;
+}
+
+.ticket-seats strong {
+    color: var(--text-main);
+}
+
+.ticket-booked {
+    font-size: 0.8rem;
+    opacity: 0.75;
+    margin-top: 8px;
+}
+
+.ticket-price {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    min-width: 80px;
+}
+
+.ticket-price-label {
+    font-size: 12px;
+    color: var(--text-dim);
+}
+
+.ticket-price-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.tickets-empty {
+    text-align: center;
+    padding: 60px 20px;
+    background: rgba(40, 20, 20, 0.4);
+    border-radius: 16px;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.tickets-empty i {
+    font-size: 48px;
+    color: var(--primary);
+    opacity: 0.6;
+    margin-bottom: 16px;
+}
+
+.tickets-empty h3 {
+    margin: 0 0 8px;
+}
+
+.tickets-empty p {
+    color: var(--text-dim);
+    margin: 0 0 24px;
+}
+
+.tickets-cta {
+    display: inline-block;
+    max-width: 220px;
+    text-decoration: none;
+}
+
+
+.nav-user-dropdown {
+    position: relative;
+}
+
+.nav-user-toggle {
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+}
+
+.nav-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    min-width: 220px;
+    background: #1a0c0c;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 8px 0;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+    z-index: 200;
+}
+
+.nav-dropdown-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    margin-bottom: 4px;
+}
+
+.nav-dropdown-name {
+    display: block;
+    font-weight: 600;
+    font-size: 14px;
+    color: #fff;
+}
+
+.nav-dropdown-email {
+    display: block;
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 2px;
+    word-break: break-all;
+}
+
+.nav-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 11px 16px;
+    color: #e8e0de;
+    text-decoration: none;
+    font-size: 14px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    text-align: left;
+    box-sizing: border-box;
+}
+
+.nav-dropdown-item:hover {
+    background: rgba(234, 42, 51, 0.12);
+    color: #fff;
+}
+
+.nav-dropdown-logout {
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+    margin-top: 4px;
+    color: #f87171;
+}
+
+
+body.modal-open {
+    overflow: hidden;
+}
+
+.contact-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.contact-modal-overlay[hidden] {
+    display: none;
+}
+
+.contact-modal {
+    position: relative;
+    width: 100%;
+    max-width: 480px;
+    background: #2a1818;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 32px 28px 28px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
+}
+
+.contact-modal-close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 8px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.contact-modal h2 {
+    margin: 0 0 8px;
+    font-size: 1.5rem;
+}
+
+.contact-modal-subtitle {
+    margin: 0 0 24px;
+    color: var(--text-dim);
+    font-size: 14px;
+}
+
+.contact-modal-feedback {
+    padding: 12px 14px;
+    border-radius: 8px;
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+.contact-modal-feedback.success {
+    background: rgba(74, 222, 128, 0.15);
+    color: #4ade80;
+}
+
+.contact-modal-feedback.error {
+    background: rgba(234, 42, 51, 0.15);
+    color: #ffb4b8;
+}
+
+.contact-field {
+    margin-bottom: 18px;
+}
+
+.contact-field label {
+    display: block;
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+}
+
+.contact-input-wrap {
+    position: relative;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+
+.contact-input-wrap i {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-dim);
+    font-size: 14px;
+}
+
+.contact-input-wrap input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    padding: 12px 14px 12px 42px;
+    color: #fff;
+    font-size: 15px;
+    outline: none;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.contact-field textarea {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 14px;
+    color: #fff;
+    font-size: 15px;
+    resize: vertical;
+    min-height: 120px;
+    outline: none;
+    box-sizing: border-box;
+    font-family: inherit;
+}
+
+.btn-contact-submit {
+    width: 100%;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 16px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 8px;
+    transition: opacity 0.2s;
+}
+
+.btn-contact-submit:hover:not(:disabled) {
+    opacity: 0.92;
+}
+
+.btn-contact-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+    .ticket-card {
+        flex-wrap: wrap;
+    }
+
+    .ticket-price {
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: baseline;
+        padding-top: 8px;
+        border-top: 1px solid rgba(255, 255, 255, 0.06);
     }
 }

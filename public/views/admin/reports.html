@@ -1,0 +1,39 @@
+<?php include __DIR__ . '/../partials/header.html'; ?>
+<link rel="stylesheet" href="/public/css/admin.css">
+
+<body id="admin-page">
+<div class="admin-layout">
+    <?php include __DIR__ . '/../partials/admin-sidebar.html'; ?>
+
+    <main class="admin-main">
+        <header class="admin-topbar">
+            <h1>Reports</h1>
+            <a href="/logout" class="admin-logout"><i class="fas fa-right-from-bracket"></i> Log out</a>
+        </header>
+
+        <div class="admin-stats">
+            <div class="admin-stat-card">
+                <span class="admin-stat-label">Total Revenue</span>
+                <span class="admin-stat-value">$<?= number_format($stats['totalRevenue'], 2); ?></span>
+            </div>
+            <div class="admin-stat-card">
+                <span class="admin-stat-label">Tickets Sold</span>
+                <span class="admin-stat-value"><?= number_format($stats['ticketsSold']); ?></span>
+            </div>
+            <div class="admin-stat-card">
+                <span class="admin-stat-label">Active Users</span>
+                <span class="admin-stat-value"><?= number_format($stats['activeUsers']); ?></span>
+            </div>
+            <div class="admin-stat-card">
+                <span class="admin-stat-label">Avg. Occupancy</span>
+                <span class="admin-stat-value"><?= $stats['avgOccupancy']; ?>%</span>
+            </div>
+        </div>
+
+        <section class="admin-panel">
+            <p class="admin-report-note">Summary based on current reservation data in the system.</p>
+        </section>
+    </main>
+</div>
+
+<?php include __DIR__ . '/../partials/footer.html'; ?>

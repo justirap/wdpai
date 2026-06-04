@@ -1,4 +1,6 @@
+DROP TABLE IF EXISTS contact_messages CASCADE;
 DROP TABLE IF EXISTS reservations CASCADE;
+DROP TABLE IF EXISTS screenings CASCADE;
 DROP TABLE IF EXISTS movie_categories CASCADE;
 DROP TABLE IF EXISTS categories CASCADE;
 DROP TABLE IF EXISTS movies CASCADE;
@@ -18,47 +20,68 @@ CREATE TABLE movies (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     description TEXT,
-    image VARCHAR(255), 
+    image VARCHAR(255),
     duration INT
 );
 
--- 3. TABELA KATEGORII (GATUNKÓW)
+-- 3. TABELA KATEGORII
 CREATE TABLE categories (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) UNIQUE NOT NULL
 );
 
--- 4. TABELA POŚREDNICZĄCA (RELACJA FILM <-> KATEGORIA)
+-- 4. TABELA POŚREDNICZĄCA (FILM <-> KATEGORIA)
 CREATE TABLE movie_categories (
     movie_id INT REFERENCES movies(id) ON DELETE CASCADE,
     category_id INT REFERENCES categories(id) ON DELETE CASCADE,
     PRIMARY KEY (movie_id, category_id)
 );
 
--- 5. TABELA REZERWACJI
-CREATE TABLE reservations (
+-- 5. SEANSE (data + godzina + sala)
+CREATE TABLE screenings (
     id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(id) ON DELETE CASCADE,
-    movie_id INT REFERENCES movies(id) ON DELETE CASCADE,
-    seat_number VARCHAR(10) NOT NULL,
+    movie_id INT NOT NULL REFERENCES movies(id) ON DELETE CASCADE,
+    show_date DATE NOT NULL,
+    show_time TIME NOT NULL,
+    hall_number INT NOT NULL DEFAULT 1,
+    format VARCHAR(50) NOT NULL DEFAULT 'Digital',
+    UNIQUE (movie_id, show_date, show_time, hall_number)
+);
+
+-- 6. WIADOMOŚCI KONTAKTOWE
+CREATE TABLE contact_messages (
+    id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users(id) ON DELETE SET NULL,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 7. REZERWACJE (per seans)
+CREATE TABLE reservations (
+    id SERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    screening_id INT NOT NULL REFERENCES screenings(id) ON DELETE CASCADE,
+    seat_number VARCHAR(10) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (screening_id, seat_number)
+);
+
 -- =========================================================================
--- INSERTY DANYCH
+-- DANE
 -- =========================================================================
 
--- Użytkownicy (Hasło dla obu kont: "password123")
-INSERT INTO users (username, email, password, role) VALUES 
-('admin', 'admin@cinema.com', '$2y$10$8uN6Nf8lYhX.GgGv.P8QOuC2mH2zZ5H0xM5L7U7v0L5P1i0e6L2mO', 'admin'),
-('jan_kowalski', 'user@gmail.com', '$2y$10$8uN6Nf8lYhX.GgGv.P8QOuC2mH2zZ5H0xM5L7U7v0L5P1i0e6L2mO', 'user');
+-- Hasło dla obu kont: password123 (hash wygenerowany przez password_hash)
+INSERT INTO users (username, email, password, role) VALUES
+('admin', 'admin@cinema.com', '$2y$10$Rd1LPARvIxew4g1fgEVYcODtJAgZ7We10k4Pka5x2cn9msjALrDN.', 'admin'),
+('jan_kowalski', 'user@gmail.com', '$2y$10$Rd1LPARvIxew4g1fgEVYcODtJAgZ7We10k4Pka5x2cn9msjALrDN.', 'user');
 
--- Kategorie filmowe
-INSERT INTO categories (name) VALUES 
+INSERT INTO categories (name) VALUES
 ('Sci-Fi'), ('Action'), ('Comedy'), ('Drama'), ('Horror'), ('Thriller'), ('Documentary');
 
-INSERT INTO movies (id, title, description, image, duration) VALUES 
--- STRONA 1
+INSERT INTO movies (id, title, description, image, duration) VALUES
 (1, 'Inception', 'Złodziej kradnie tajemnice firmowe poprzez wykorzystanie technologii dzielenia się snami.', '1.png', 148),
 (2, 'The Dark Knight', 'Batman podejmuje walkę z Jokerem, który chce pogrążyć Gotham City w anarchii.', '2.png', 152),
 (3, 'Interstellar', 'Grupa odkrywców podróżuje przez tunel czasoprzestrzenny w celu ratowania ludzkości.', '3.png', 169),
@@ -67,8 +90,6 @@ INSERT INTO movies (id, title, description, image, duration) VALUES
 (6, 'Oppenheimer', 'Historia amerykańskiego naukowca J. Roberta Oppenheimera i jego roli w stworzeniu bomby atomowej.', '6.png', 180),
 (7, 'Everything Everywhere All at Once', 'Egzystencjalny kryzys gospodyni domowej przeradza się w niesamowitą walkę w multiwersum.', '7.png', 139),
 (8, 'The Batman', 'Mroczny Rycerz tropi seryjnego mordercę Człowieka-Zagadkę w skorumpowanym Gotham.', '8.png', 176),
-
--- STRONA 2
 (9, 'Biedne Istoty', 'Niesamowita opowieść o ewolucji Belli Baxter, młodej kobiety przywróconej do życia.', '9.png', 141),
 (10, 'Blade Runner 2049', 'Nowy oficer policji Los Angeles odkrywa skrywaną przez lata tajemnicę.', '10.png', 164),
 (11, 'Joker', 'Strudzony życiem komik Arthur Fleck popada w obłęd i staje się psychopatycznym mordercą.', '11.png', 122),
@@ -77,8 +98,6 @@ INSERT INTO movies (id, title, description, image, duration) VALUES
 (14, 'Shutter Island', 'Szeryf federalny bada sprawę zniknięcia pacjentki ze szpitala dla psychicznie chorych.', '14.png', 138),
 (15, 'Whiplash', 'Młody perkusista dostaje się do elitarnej orkiestry prowadzonej przez bezwzględnego nauczyciela.', '15.png', 106),
 (16, 'Get Out', 'Młody Afroamerykanin odwiedza posiadłość rodziców swojej białej dziewczyny.', '16.png', 104),
-
--- STRONA 3
 (17, 'The Matrix', 'Haker komputerowy dowiaduje się od tajemniczych buntowników o prawdziwej naturze jego rzeczywistości.', '17.png', 136),
 (18, 'Gladiator', 'Generał rzymski staje się gladiatorem, by pomścić śmierć swojej rodziny i cesarza.', '18.png', 155),
 (19, 'Se7en', 'Dwóch detektywów poluje na seryjnego mordercę, który wybiera ofiary według siedmiu grzechów głównych.', '19.png', 127),
@@ -90,29 +109,66 @@ INSERT INTO movies (id, title, description, image, duration) VALUES
 
 SELECT setval('movies_id_seq', 24);
 
+INSERT INTO movie_categories (movie_id, category_id) VALUES
+(1, 1), (1, 6),
+(2, 2), (2, 6),
+(3, 1), (3, 4),
+(4, 4), (4, 6),
+(5, 1), (5, 2),
+(6, 4),
+(7, 1), (7, 3),
+(8, 2), (8, 6),
+(9, 3), (9, 4),
+(10, 1),
+(11, 4), (11, 6),
+(12, 2),
+(13, 4), (13, 6),
+(14, 6),
+(15, 4),
+(16, 5), (16, 6),
+(17, 1), (17, 2),
+(18, 2), (18, 4),
+(19, 6),
+(20, 1), (20, 2),
+(21, 5),
+(22, 3), (22, 6),
+(23, 1), (23, 2),
+(24, 4);
 
-INSERT INTO movie_categories (movie_id, category_id) VALUES 
-(1, 1), (1, 6), -- Inception: Sci-Fi, Thriller
-(2, 2), (2, 6), -- The Dark Knight: Action, Thriller
-(3, 1), (3, 4), -- Interstellar: Sci-Fi, Drama
-(4, 4), (4, 6), -- Parasite: Drama, Thriller
-(5, 1), (5, 2), -- Dune 2: Sci-Fi, Action
-(6, 4),          -- Oppenheimer: Drama
-(7, 1), (7, 3), -- Everything Everywhere: Sci-Fi, Comedy
-(8, 2), (8, 6), -- The Batman: Action, Thriller
-(9, 3), (9, 4), -- Biedne Istoty: Comedy, Drama
-(10, 1),         -- Blade Runner 2049: Sci-Fi
-(11, 4), (11, 6),-- Joker: Drama, Thriller
-(12, 2),         -- Mad Max: Action
-(13, 4), (13, 6),-- Zodiac: Drama, Thriller
-(14, 6),         -- Shutter Island: Thriller
-(15, 4),         -- Whiplash: Drama
-(16, 5), (16, 6),-- Get Out: Horror, Thriller
-(17, 1), (17, 2),-- The Matrix: Sci-Fi, Action
-(18, 2), (18, 4),-- Gladiator: Action, Drama
-(19, 6),         -- Se7en: Thriller
-(20, 1), (20, 2),-- Spider-Verse: Sci-Fi, Action
-(21, 5),         -- The Conjuring: Horror
-(22, 3), (22, 6),-- Knives Out: Comedy, Thriller
-(23, 1), (23, 2),-- Tenet: Sci-Fi, Action
-(24, 4);         -- Fight Club: Drama
+-- 4 seanse na film (czerwiec 2026)
+INSERT INTO screenings (movie_id, show_date, show_time, hall_number, format)
+SELECT
+    m.id,
+    ('2026-06-01'::date + ((m.id + slot.day_offset) % 5))::date,
+    slot.show_time,
+    (m.id % 4) + 1,
+    CASE WHEN m.id % 4 = 0 THEN 'IMAX 3D' WHEN m.id % 4 = 2 THEN '4DX' ELSE 'Digital' END
+FROM movies m
+CROSS JOIN (
+    VALUES
+        (0, '14:00'::time),
+        (0, '20:00'::time),
+        (1, '17:30'::time),
+        (2, '22:30'::time)
+) AS slot(day_offset, show_time);
+
+-- Przykładowe zajęte miejsca (Inception 01.06 14:00) + demo bilet użytkownika
+INSERT INTO reservations (user_id, screening_id, seat_number)
+SELECT 2, s.id, t.seat
+FROM screenings s
+CROSS JOIN (VALUES ('A4'), ('A5'), ('C1')) AS t(seat)
+WHERE s.movie_id = 1
+  AND s.show_date = '2026-06-01'
+  AND s.show_time = '14:00'::time;
+
+INSERT INTO reservations (user_id, screening_id, seat_number)
+SELECT 2, s.id, t.seat
+FROM screenings s
+CROSS JOIN (VALUES ('B3'), ('B4')) AS t(seat)
+WHERE s.movie_id = 2
+  AND s.show_date = '2026-06-03'
+  AND s.show_time = '20:00'::time;
+
+-- Przykładowa wiadomość kontaktowa
+INSERT INTO contact_messages (user_id, name, email, message, is_read) VALUES
+(2, 'Jan Kowalski', 'user@gmail.com', 'Is there a student discount for weekend screenings?', FALSE);
