@@ -1,15 +1,33 @@
 <?php
 
-
 class AppController {
-    protected function isGet(): bool
-    {
-        return $_SERVER["REQUEST_METHOD"] === 'GET';
+    protected function isGet(): bool {
+        return $_SERVER['REQUEST_METHOD'] === 'GET';
     }
 
-    protected function isPost(): bool
-    {
-        return $_SERVER["REQUEST_METHOD"] === 'POST';
+    protected function isPost(): bool {
+        return $_SERVER['REQUEST_METHOD'] === 'POST';
+    }
+
+    protected function getCsrfToken(): string {
+        if (empty($_SESSION['csrf_token'])) {
+            $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+        }
+
+        return $_SESSION['csrf_token'];
+    }
+
+    protected function validateCsrfToken(): bool {
+        $submitted = $_POST['csrf_token'] ?? '';
+        $sessionToken = $_SESSION['csrf_token'] ?? '';
+
+        return is_string($submitted)
+            && $sessionToken !== ''
+            && hash_equals($sessionToken, $submitted);
+    }
+
+    protected function authViewData(array $extra = []): array {
+        return array_merge(['csrfToken' => $this->getCsrfToken()], $extra);
     }
  
     protected function render(string $template = null, array $variables = [])

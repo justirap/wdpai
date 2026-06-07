@@ -14,12 +14,13 @@
             <a href="/register">Sign Up</a>
         </div>
 
-        <form action="/login" method="POST">
-            
+        <form action="/login" method="POST"<?= !empty($loginLocked) ? ' class="login-form-locked"' : ''; ?>>
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrfToken ?? ''); ?>">
+
             <div class="messages">
                 <?php if(isset($messages)): ?>
                     <?php foreach($messages as $message): ?>
-                        <div class="message-error"><?= $message; ?></div>
+                        <div class="message-error"><?= htmlspecialchars($message); ?></div>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </div>
@@ -28,7 +29,9 @@
                 <label for="email">Email Address</label>
                 <div class="input-wrapper">
                     <i class="fas fa-envelope"></i>
-                    <input name="email" type="email" id="email" placeholder="name@example.com" required>
+                    <input name="email" type="email" id="email" placeholder="name@example.com"
+                           maxlength="255"
+                           <?= !empty($loginLocked) ? 'disabled' : 'required'; ?>>
                 </div>
             </div>
 
@@ -36,12 +39,14 @@
                 <label for="password">Password</label>
                 <div class="input-wrapper">
                     <i class="fas fa-lock"></i>
-                    <input name="password" type="password" id="password" placeholder="••••••••" required>
+                    <input name="password" type="password" id="password" placeholder="••••••••"
+                           maxlength="128"
+                           <?= !empty($loginLocked) ? 'disabled' : 'required'; ?>>
                     <i class="fas fa-eye show-password" style="left: auto; right: 15px; cursor: pointer;"></i>
                 </div>
             </div>
 
-            <button type="submit" class="btn-primary">Log In</button>
+            <button type="submit" class="btn-primary" <?= !empty($loginLocked) ? 'disabled' : ''; ?>>Log In</button>
         </form>
     </div>
 </div>

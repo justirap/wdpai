@@ -108,10 +108,13 @@ class AdminController extends AppController {
             }
         }
 
+        $screenings = $old['screenings'] ?? $this->getDefaultScreenings();
+
         return $this->render('admin/movies', [
             'activeSection' => 'movies',
             'movies' => $this->movieRepository->getAllMoviesAdmin(),
             'categories' => $this->movieRepository->getAllCategories(),
+            'screenings' => $screenings,
             'messages' => $messages,
             'errors' => $errors,
             'old' => $old,
@@ -130,6 +133,13 @@ class AdminController extends AppController {
     }
 
     private function handleAddMovie(): array {
+        if (empty($_POST) && empty($_FILES) && (int) ($_SERVER['CONTENT_LENGTH'] ?? 0) > 0) {
+            return [
+                'success' => false,
+                'errors' => ['Upload too large. Poster must be smaller than 5 MB.'],
+            ];
+        }
+
         $title = trim($_POST['title'] ?? '');
         $description = trim($_POST['description'] ?? '');
         $duration = (int) ($_POST['duration'] ?? 0);
@@ -154,11 +164,18 @@ class AdminController extends AppController {
             $errors[] = 'Select at least one category.';
         }
 
+        $screeningResult = $this->parseScreenings($_POST['screenings'] ?? []);
+        if (!empty($screeningResult['errors'])) {
+            $errors = array_merge($errors, $screeningResult['errors']);
+        }
+
         $upload = $_FILES['poster'] ?? null;
-        if (!$upload || ($upload['error'] ?? UPLOAD_ERR_NO_FILE) === UPLOAD_ERR_NO_FILE) {
+        if (!$upload || !isset($upload['error'])) {
             $errors[] = 'Poster image is required.';
-        } elseif (($upload['error'] ?? UPLOAD_ERR_OK) !== UPLOAD_ERR_OK) {
-            $errors[] = 'Failed to upload image. Please try again.';
+        } elseif ($upload['error'] === UPLOAD_ERR_NO_FILE) {
+            $errors[] = 'Poster image is required.';
+        } elseif ($upload['error'] !== UPLOAD_ERR_OK) {
+            $errors[] = $this->uploadErrorMessage($upload['error']);
         }
 
         if (!empty($errors)) {
@@ -174,39 +191,125 @@ class AdminController extends AppController {
         try {
             $movieId = $this->movieRepository->createMovie($title, $description, $filename, $duration);
             $this->movieRepository->attachCategories($movieId, $categoryIds);
-            $this->screeningRepository->createDefaultScreenings($movieId);
+            $this->screeningRepository->createScreenings($movieId, $screeningResult['slots']);
         } catch (Exception $e) {
             $this->deletePosterFile($filename);
             return ['success' => false, 'errors' => ['Could not save movie. Please try again.']];
         }
 
+        $showtimeCount = count($screeningResult['slots']);
+
         return [
             'success' => true,
-            'message' => "Movie \"{$title}\" added successfully with 4 default showtimes.",
+            'message' => "Movie \"{$title}\" added successfully with {$showtimeCount} showtime(s).",
         ];
     }
 
+    private function getDefaultScreenings(): array {
+        return [
+            ['date' => date('Y-m-d', strtotime('+1 day')), 'time' => '14:00'],
+            ['date' => date('Y-m-d', strtotime('+1 day')), 'time' => '20:00'],
+            ['date' => date('Y-m-d', strtotime('+2 days')), 'time' => '17:30'],
+            ['date' => date('Y-m-d', strtotime('+3 days')), 'time' => '22:30'],
+        ];
+    }
+
+    private function parseScreenings($raw): array {
+        if (!is_array($raw)) {
+            return ['slots' => [], 'errors' => ['Add at least one showtime.']];
+        }
+
+        $slots = [];
+        $errors = [];
+        $seen = [];
+
+        foreach ($raw as $index => $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+
+            $date = trim($row['date'] ?? '');
+            $time = trim($row['time'] ?? '');
+
+            if ($date === '' && $time === '') {
+                continue;
+            }
+
+            $rowNum = (int) $index + 1;
+
+            if ($date === '') {
+                $errors[] = "Showtime #{$rowNum}: date is required.";
+                continue;
+            }
+            if ($time === '') {
+                $errors[] = "Showtime #{$rowNum}: time is required.";
+                continue;
+            }
+
+            $parsedDate = DateTime::createFromFormat('Y-m-d', $date);
+            if (!$parsedDate || $parsedDate->format('Y-m-d') !== $date) {
+                $errors[] = "Showtime #{$rowNum}: invalid date.";
+                continue;
+            }
+
+            $parsedTime = DateTime::createFromFormat('H:i', $time);
+            if (!$parsedTime || $parsedTime->format('H:i') !== $time) {
+                $errors[] = "Showtime #{$rowNum}: invalid time (use HH:MM).";
+                continue;
+            }
+
+            $key = $date . '|' . $time;
+            if (isset($seen[$key])) {
+                $errors[] = "Showtime #{$rowNum}: duplicate date and time.";
+                continue;
+            }
+            $seen[$key] = true;
+
+            $slots[] = ['date' => $date, 'time' => $time];
+        }
+
+        if (empty($slots) && empty($errors)) {
+            $errors[] = 'Add at least one showtime.';
+        }
+
+        return ['slots' => $slots, 'errors' => $errors];
+    }
+
+    private function uploadErrorMessage(int $code): string {
+        return match ($code) {
+            UPLOAD_ERR_INI_SIZE, UPLOAD_ERR_FORM_SIZE => 'Image is too large. Maximum size is 5 MB.',
+            UPLOAD_ERR_PARTIAL => 'Image upload was interrupted. Please try again.',
+            UPLOAD_ERR_NO_TMP_DIR, UPLOAD_ERR_CANT_WRITE, UPLOAD_ERR_EXTENSION => 'Server could not save the image. Contact administrator.',
+            default => 'Failed to upload image. Please try again.',
+        };
+    }
+
     private function savePosterUpload(array $file): string {
+        if (($file['size'] ?? 0) <= 0) {
+            throw new RuntimeException('Uploaded file is empty.');
+        }
+
         if ($file['size'] > self::MAX_POSTER_BYTES) {
             throw new RuntimeException('Image must be smaller than 5 MB.');
         }
 
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mime = finfo_file($finfo, $file['tmp_name']);
-        finfo_close($finfo);
+        $imageInfo = getimagesize($file['tmp_name']);
+        if ($imageInfo === false) {
+            throw new RuntimeException('Uploaded file is not a valid image.');
+        }
+
+        $mime = $imageInfo['mime'] ?? '';
+        if ($mime === '' && function_exists('finfo_open')) {
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mime = finfo_file($finfo, $file['tmp_name']) ?: '';
+            finfo_close($finfo);
+        }
 
         if (!isset(self::ALLOWED_MIME[$mime])) {
             throw new RuntimeException('Only JPG, PNG and WebP images are allowed.');
         }
 
-        if (!getimagesize($file['tmp_name'])) {
-            throw new RuntimeException('Uploaded file is not a valid image.');
-        }
-
-        $uploadDir = realpath(__DIR__ . '/../../public/img');
-        if ($uploadDir === false || !is_dir($uploadDir) || !is_writable($uploadDir)) {
-            throw new RuntimeException('Upload directory is not writable.');
-        }
+        $uploadDir = $this->getPosterUploadDir();
 
         $extension = self::ALLOWED_MIME[$mime];
         $filename = 'movie_' . time() . '_' . bin2hex(random_bytes(4)) . '.' . $extension;
@@ -219,10 +322,28 @@ class AdminController extends AppController {
         return $filename;
     }
 
+    private function getPosterUploadDir(): string {
+        $dir = realpath(__DIR__ . '/../../public/img');
+        if ($dir === false) {
+            $dir = __DIR__ . '/../../public/img';
+            if (!is_dir($dir) && !mkdir($dir, 0755, true) && !is_dir($dir)) {
+                throw new RuntimeException('Upload directory does not exist.');
+            }
+            $dir = realpath($dir) ?: $dir;
+        }
+
+        if (!is_writable($dir)) {
+            throw new RuntimeException('Upload directory is not writable.');
+        }
+
+        return $dir;
+    }
+
     private function deletePosterFile(string $filename): void {
         $basename = basename($filename);
-        $path = realpath(__DIR__ . '/../../public/img');
-        if ($path === false) {
+        try {
+            $path = $this->getPosterUploadDir();
+        } catch (RuntimeException $e) {
             return;
         }
         $file = $path . DIRECTORY_SEPARATOR . $basename;

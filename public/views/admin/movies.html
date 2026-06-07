@@ -29,7 +29,7 @@
 
         <section class="admin-panel admin-movie-form-panel">
             <h2>Add New Movie</h2>
-            <p class="admin-form-hint">Poster will be saved to <code>public/img/</code>. Four default showtimes are created automatically.</p>
+            <p class="admin-form-hint">Poster will be saved to <code>public/img/</code>. Set at least one showtime date below.</p>
 
             <form method="POST" action="/admin/movies" enctype="multipart/form-data" class="admin-movie-form">
                 <div class="admin-form-grid">
@@ -74,12 +74,31 @@
                 </div>
 
                 <div class="admin-form-field">
-                    <label for="poster">Poster image</label>
-                    <div class="admin-file-upload">
-                        <i class="fas fa-image"></i>
-                        <input type="file" id="poster" name="poster" accept="image/jpeg,image/png,image/webp" required>
-                        <span class="admin-file-hint">JPG, PNG or WebP — max 5 MB</span>
+                    <label>Showtimes</label>
+                    <p class="admin-field-hint">Leave unused rows empty. At least one date and time is required.</p>
+                    <div class="admin-screenings-list">
+                        <?php foreach ($screenings as $index => $slot): ?>
+                            <div class="admin-screening-row">
+                                <span class="admin-screening-label">#<?= (int) $index + 1; ?></span>
+                                <input type="date" name="screenings[<?= (int) $index; ?>][date]"
+                                       value="<?= htmlspecialchars($slot['date'] ?? ''); ?>">
+                                <input type="time" name="screenings[<?= (int) $index; ?>][time]"
+                                       value="<?= htmlspecialchars($slot['time'] ?? ''); ?>">
+                            </div>
+                        <?php endforeach; ?>
                     </div>
+                </div>
+
+                <div class="admin-form-field">
+                    <label for="poster">Poster image</label>
+                    <label class="admin-file-upload" for="poster">
+                        <i class="fas fa-image"></i>
+                        <span class="admin-file-label">Choose poster image</span>
+                        <input type="file" id="poster" name="poster"
+                               accept="image/jpeg,image/png,image/webp" required>
+                        <span class="admin-file-name" id="poster-filename">No file selected</span>
+                        <span class="admin-file-hint">JPG, PNG or WebP — max 5 MB</span>
+                    </label>
                     <div class="admin-poster-preview" id="poster-preview" hidden>
                         <img src="" alt="Preview" id="poster-preview-img">
                     </div>
@@ -133,14 +152,17 @@
     const input = document.getElementById('poster');
     const preview = document.getElementById('poster-preview');
     const img = document.getElementById('poster-preview-img');
-    if (!input || !preview || !img) return;
+    const filename = document.getElementById('poster-filename');
+    if (!input || !preview || !img || !filename) return;
 
     input.addEventListener('change', () => {
         const file = input.files[0];
         if (!file) {
             preview.hidden = true;
+            filename.textContent = 'No file selected';
             return;
         }
+        filename.textContent = file.name;
         img.src = URL.createObjectURL(file);
         preview.hidden = false;
     });

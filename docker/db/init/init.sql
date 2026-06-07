@@ -1,3 +1,7 @@
+DROP VIEW IF EXISTS v_user_tickets CASCADE;
+DROP FUNCTION IF EXISTS fn_is_seat_available(INT, VARCHAR) CASCADE;
+DROP FUNCTION IF EXISTS trg_validate_seat_number() CASCADE;
+
 DROP TABLE IF EXISTS contact_messages CASCADE;
 DROP TABLE IF EXISTS reservations CASCADE;
 DROP TABLE IF EXISTS screenings CASCADE;
@@ -68,6 +72,50 @@ CREATE TABLE reservations (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (screening_id, seat_number)
 );
+
+CREATE VIEW v_user_tickets AS
+SELECT
+    r.user_id,
+    s.id AS screening_id,
+    m.id AS movie_id,
+    m.title,
+    m.image,
+    m.duration,
+    s.show_date,
+    s.show_time,
+    s.hall_number,
+    s.format,
+    STRING_AGG(r.seat_number, ', ' ORDER BY r.seat_number) AS seats,
+    MIN(r.created_at) AS booked_at
+FROM reservations r
+INNER JOIN screenings s ON s.id = r.screening_id
+INNER JOIN movies m ON m.id = s.movie_id
+GROUP BY r.user_id, s.id, m.id, m.title, m.image, m.duration,
+         s.show_date, s.show_time, s.hall_number, s.format;
+
+CREATE OR REPLACE FUNCTION fn_is_seat_available(p_screening_id INT, p_seat VARCHAR)
+RETURNS BOOLEAN AS $$
+    SELECT NOT EXISTS (
+        SELECT 1
+        FROM reservations
+        WHERE screening_id = p_screening_id
+          AND seat_number = p_seat
+    );
+$$ LANGUAGE sql STABLE;
+
+CREATE OR REPLACE FUNCTION trg_validate_seat_number()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.seat_number !~ '^[A-D]([1-8])$' THEN
+        RAISE EXCEPTION 'Invalid seat number: %', NEW.seat_number;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER reservations_validate_seat
+BEFORE INSERT OR UPDATE ON reservations
+FOR EACH ROW EXECUTE FUNCTION trg_validate_seat_number();
 
 -- =========================================================================
 -- DANE

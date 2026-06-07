@@ -20,24 +20,20 @@ class ReservationRepository extends Repository {
     public function getUserBookings(int $userId): array {
         $stmt = $this->database->connect()->prepare('
             SELECT
-                s.id AS screening_id,
-                m.id AS movie_id,
-                m.title,
-                m.image,
-                m.duration,
-                s.show_date,
-                s.show_time,
-                s.hall_number,
-                s.format,
-                STRING_AGG(r.seat_number, \', \' ORDER BY r.seat_number) AS seats,
-                MIN(r.created_at) AS booked_at
-            FROM reservations r
-            INNER JOIN screenings s ON s.id = r.screening_id
-            INNER JOIN movies m ON m.id = s.movie_id
-            WHERE r.user_id = :user_id
-            GROUP BY s.id, m.id, m.title, m.image, m.duration,
-                     s.show_date, s.show_time, s.hall_number, s.format
-            ORDER BY s.show_date ASC, s.show_time ASC
+                screening_id,
+                movie_id,
+                title,
+                image,
+                duration,
+                show_date,
+                show_time,
+                hall_number,
+                format,
+                seats,
+                booked_at
+            FROM v_user_tickets
+            WHERE user_id = :user_id
+            ORDER BY show_date ASC, show_time ASC
         ');
         $stmt->bindValue(':user_id', $userId, PDO::PARAM_INT);
         $stmt->execute();
@@ -84,9 +80,7 @@ class ReservationRepository extends Repository {
             $pdo->beginTransaction();
 
             $check = $pdo->prepare('
-                SELECT 1 FROM reservations
-                WHERE screening_id = :screening_id AND seat_number = :seat_number
-                LIMIT 1
+                SELECT fn_is_seat_available(:screening_id, :seat_number) AS available
             ');
             $insert = $pdo->prepare('
                 INSERT INTO reservations (user_id, screening_id, seat_number)
@@ -98,7 +92,12 @@ class ReservationRepository extends Repository {
                     ':screening_id' => $screeningId,
                     ':seat_number' => $seat,
                 ]);
-                if ($check->fetchColumn()) {
+                $available = filter_var(
+                    $check->fetchColumn(),
+                    FILTER_VALIDATE_BOOLEAN,
+                    FILTER_NULL_ON_FAILURE
+                );
+                if ($available !== true) {
                     $failed[] = $seat;
                 }
             }

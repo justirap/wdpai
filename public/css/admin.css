@@ -469,6 +469,42 @@ body#admin-page .main-footer {
     accent-color: var(--primary);
 }
 
+.admin-field-hint {
+    margin: 0 0 10px;
+    font-size: 12px;
+    color: var(--text-dim);
+}
+
+.admin-screenings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.admin-screening-row {
+    display: grid;
+    grid-template-columns: 36px 1fr 120px;
+    gap: 10px;
+    align-items: center;
+}
+
+.admin-screening-label {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-align: center;
+}
+
+.admin-screening-row input[type="date"],
+.admin-screening-row input[type="time"] {
+    background: #120808;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 12px 14px;
+    color: #e8e0de;
+    font-family: inherit;
+    font-size: 14px;
+}
+
 .admin-file-upload {
     display: flex;
     align-items: center;
@@ -477,6 +513,12 @@ body#admin-page .main-footer {
     background: #120808;
     border: 1px dashed rgba(255, 255, 255, 0.15);
     border-radius: 12px;
+    cursor: pointer;
+}
+
+.admin-file-upload:hover {
+    border-color: rgba(255, 255, 255, 0.28);
+    background: #160a0a;
 }
 
 .admin-file-upload i {
@@ -484,10 +526,31 @@ body#admin-page .main-footer {
     color: var(--primary);
 }
 
+.admin-file-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #fff;
+}
+
 .admin-file-upload input[type="file"] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.admin-file-name {
     flex: 1;
-    color: var(--text-dim);
     font-size: 13px;
+    color: var(--text-dim);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .admin-file-hint {
@@ -542,6 +605,14 @@ body#admin-page .main-footer {
 
     .admin-file-upload {
         flex-wrap: wrap;
+    }
+
+    .admin-screening-row {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-screening-label {
+        text-align: left;
     }
 }
 

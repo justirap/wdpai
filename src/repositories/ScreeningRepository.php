@@ -59,27 +59,23 @@ class ScreeningRepository extends Repository {
         return (bool) $stmt->fetchColumn();
     }
 
-    public function createDefaultScreenings(int $movieId): void {
+    public function createScreenings(int $movieId, array $slots): void {
+        if (empty($slots)) {
+            return;
+        }
+
         $hall = ($movieId % 4) + 1;
         $format = $movieId % 4 === 0 ? 'IMAX 3D' : ($movieId % 4 === 2 ? '4DX' : 'Digital');
 
-        $slots = [
-            ['day_offset' => 0, 'time' => '14:00'],
-            ['day_offset' => 0, 'time' => '20:00'],
-            ['day_offset' => 1, 'time' => '17:30'],
-            ['day_offset' => 2, 'time' => '22:30'],
-        ];
-
         $stmt = $this->database->connect()->prepare('
             INSERT INTO screenings (movie_id, show_date, show_time, hall_number, format)
-            VALUES (:movie_id, (:base_date::date + :day_offset), :show_time::time, :hall, :format)
+            VALUES (:movie_id, :show_date, :show_time, :hall, :format)
         ');
 
         foreach ($slots as $slot) {
             $stmt->execute([
                 ':movie_id' => $movieId,
-                ':base_date' => '2026-06-01',
-                ':day_offset' => $slot['day_offset'],
+                ':show_date' => $slot['date'],
                 ':show_time' => $slot['time'],
                 ':hall' => $hall,
                 ':format' => $format,
