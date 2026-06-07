@@ -187,7 +187,7 @@ INSERT INTO movie_categories (movie_id, category_id) VALUES
 INSERT INTO screenings (movie_id, show_date, show_time, hall_number, format)
 SELECT
     m.id,
-    ('2026-06-01'::date + ((m.id + slot.day_offset) % 5))::date,
+    ('2026-06-22'::date + ((m.id + slot.day_offset) % 5))::date,
     slot.show_time,
     (m.id % 4) + 1,
     CASE WHEN m.id % 4 = 0 THEN 'IMAX 3D' WHEN m.id % 4 = 2 THEN '4DX' ELSE 'Digital' END
@@ -206,7 +206,7 @@ SELECT 2, s.id, t.seat
 FROM screenings s
 CROSS JOIN (VALUES ('A4'), ('A5'), ('C1')) AS t(seat)
 WHERE s.movie_id = 1
-  AND s.show_date = '2026-06-01'
+  AND s.show_date = '2026-06-22'
   AND s.show_time = '14:00'::time;
 
 INSERT INTO reservations (user_id, screening_id, seat_number)
@@ -214,7 +214,7 @@ SELECT 2, s.id, t.seat
 FROM screenings s
 CROSS JOIN (VALUES ('B3'), ('B4')) AS t(seat)
 WHERE s.movie_id = 2
-  AND s.show_date = '2026-06-03'
+  AND s.show_date = '2026-06-22'
   AND s.show_time = '20:00'::time;
 
 -- Przykładowa wiadomość kontaktowa

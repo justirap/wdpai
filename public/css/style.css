@@ -118,6 +118,13 @@ p.subtitle { color: var(--text-dim); margin: 10px 0 30px; font-size: 14px; }
     color: var(--text-dim);
 }
 
+.auth-field-hint {
+    margin: 8px 0 0;
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.4;
+}
+
 .input-wrapper {
     position: relative;
     background: var(--input-bg);
