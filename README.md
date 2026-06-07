@@ -95,65 +95,6 @@ Przykład przepływu rezerwacji:
 
 ## Baza danych
 
-### Diagram ERD
-
-```mermaid
-erDiagram
-    users ||--o{ reservations : books
-    users ||--o{ contact_messages : sends
-    movies ||--o{ movie_categories : has
-    categories ||--o{ movie_categories : tagged
-    movies ||--o{ screenings : schedules
-    screenings ||--o{ reservations : contains
-
-    users {
-        serial id PK
-        varchar username
-        varchar email UK
-        varchar password
-        varchar role
-    }
-    movies {
-        serial id PK
-        varchar title
-        text description
-        varchar image
-        int duration
-    }
-    categories {
-        serial id PK
-        varchar name UK
-    }
-    movie_categories {
-        int movie_id PK,FK
-        int category_id PK,FK
-    }
-    screenings {
-        serial id PK
-        int movie_id FK
-        date show_date
-        time show_time
-        int hall_number
-        varchar format
-    }
-    reservations {
-        serial id PK
-        int user_id FK
-        int screening_id FK
-        varchar seat_number
-        timestamp created_at
-    }
-    contact_messages {
-        serial id PK
-        int user_id FK
-        varchar name
-        varchar email
-        text message
-        boolean is_read
-        timestamp created_at
-    }
-```
-
 ### Obiekty SQL
 
 | Typ | Nazwa | Opis |
